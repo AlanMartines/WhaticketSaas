@@ -72,8 +72,7 @@ const UserSchema = Yup.object().shape({
 	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
 	phone: Yup.string().required("Obrigatório"),
-	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
-
+	password: Yup.string().min(5, "Muito curto!").max(20, "Muito longo!").required("Obrigatório"),
 });
 
 const SignUp = () => {
