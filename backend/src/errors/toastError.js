@@ -34,7 +34,7 @@ const toastError = err => {
 		toast.error(err);
 		return
 	} else {
-		toast.error("ERR_GENERIC");
+		toast.error(i18n.t(`backendErrors.ERR_GENERIC`));
 		return
 	}
 };
