@@ -191,28 +191,30 @@ const SignUp = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <InputLabel htmlFor="plan-selection">Plano</InputLabel>
-                  <Field
-                    as={Select}
-                    name="planId"
-                    variant="outlined"
-                    fullWidth
-                    id="plan-selection"
-                  >
-                    {plans.map((plan) => (
-											<MenuItem key={plan.id} value={plan.id}>
-											{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-											<Typography variant="body2" style={{ marginTop: "0.5rem", color: "gray" }}>
-												{plan.useCampaigns ? <CheckIcon /> : <CloseIcon />} Campanhas |{" "}
-												{plan.useSchedules ? <CheckIcon /> : <CloseIcon />} Agendamentos |{" "}
-												{plan.useInternalChat ? <CheckIcon /> : <CloseIcon />} Chat Interno |{" "}
-												{plan.useExternalApi ? <CheckIcon /> : <CloseIcon />} API Externa |{" "}
-												{plan.useKanban ? <CheckIcon /> : <CloseIcon />} Kanban |{" "}
-												{plan.useOpenAi ? <CheckIcon /> : <CloseIcon />} OpenAI |{" "}
-												{plan.useIntegrations ? <CheckIcon /> : <CloseIcon />} Integrações
-											</Typography>
-										</MenuItem>
-                    ))}
-                  </Field>
+									<Field
+										as={Select}
+										name="planId"
+										variant="outlined"
+										fullWidth
+										id="plan-selection"
+									>
+										{plans
+											.sort((a, b) => a.name.localeCompare(b.name)) // Ordena os planos em ordem alfabética pelo nome
+											.map((plan) => (
+												<MenuItem key={plan.id} value={plan.id}>
+													{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+													<Typography variant="body2" style={{ marginTop: "0.5rem", color: "gray" }}>
+														{plan.useCampaigns ? <CheckIcon /> : <CloseIcon />} Campanhas |{" "}
+														{plan.useSchedules ? <CheckIcon /> : <CloseIcon />} Agendamentos |{" "}
+														{plan.useInternalChat ? <CheckIcon /> : <CloseIcon />} Chat Interno |{" "}
+														{plan.useExternalApi ? <CheckIcon /> : <CloseIcon />} API Externa |{" "}
+														{plan.useKanban ? <CheckIcon /> : <CloseIcon />} Kanban |{" "}
+														{plan.useOpenAi ? <CheckIcon /> : <CloseIcon />} OpenAI |{" "}
+														{plan.useIntegrations ? <CheckIcon /> : <CloseIcon />} Integrações
+													</Typography>
+												</MenuItem>
+											))}
+									</Field>
                 </Grid>
               </Grid>
               <Button
