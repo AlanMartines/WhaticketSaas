@@ -148,20 +148,30 @@ const SignUp = () => {
                     helperText={touched.email && errors.email}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <InputMask mask="(99) 99999-9999">
-                    {() => (
-                      <Field
-                        as={TextField}
-                        name="phone"
-                        variant="outlined"
-                        fullWidth
-                        id="phone"
-                        label="Telefone"
-                      />
-                    )}
-                  </InputMask>
-                </Grid>
+								<Grid item xs={12}>
+									<Field name="phone">
+										{({ field, meta }) => (
+											<InputMask
+												mask="(99) 99999-9999"
+												value={field.value}
+												onChange={field.onChange}
+												onBlur={field.onBlur}
+											>
+												{() => (
+													<TextField
+														{...field}
+														variant="outlined"
+														fullWidth
+														id="phone"
+														label="Telefone"
+														error={meta.touched && Boolean(meta.error)}
+														helperText={meta.touched && meta.error}
+													/>
+												)}
+											</InputMask>
+										)}
+									</Field>
+								</Grid>
                 <Grid item xs={12}>
                   <Field
                     as={TextField}
