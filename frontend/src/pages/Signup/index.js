@@ -69,9 +69,10 @@ const Copyright = () => (
 );
 
 const UserSchema = Yup.object().shape({
-  name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
-  password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
-  email: Yup.string().email("E-mail inválido").required("Obrigatório"),
+	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
+	phone: Yup.string().required("Obrigatório"),
+	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 });
 
 const SignUp = () => {
@@ -198,39 +199,17 @@ const SignUp = () => {
                     id="plan-selection"
                   >
                     {plans.map((plan) => (
-										<MenuItem key={plan.id} value={plan.id}>
-											<Typography variant="body1" style={{ fontWeight: "bold" }}>
-												{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+											<MenuItem key={plan.id} value={plan.id}>
+											{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+											<Typography variant="body2" style={{ marginTop: "0.5rem", color: "gray" }}>
+												{plan.useCampaigns ? <CheckIcon /> : <CloseIcon />} Campanhas |{" "}
+												{plan.useSchedules ? <CheckIcon /> : <CloseIcon />} Agendamentos |{" "}
+												{plan.useInternalChat ? <CheckIcon /> : <CloseIcon />} Chat Interno |{" "}
+												{plan.useExternalApi ? <CheckIcon /> : <CloseIcon />} API Externa |{" "}
+												{plan.useKanban ? <CheckIcon /> : <CloseIcon />} Kanban |{" "}
+												{plan.useOpenAi ? <CheckIcon /> : <CloseIcon />} OpenAI |{" "}
+												{plan.useIntegrations ? <CheckIcon /> : <CloseIcon />} Integrações
 											</Typography>
-											<div style={{ display: "flex", flexWrap: "wrap", marginTop: "0.5rem" }}>
-												<Tooltip title="Permite criar campanhas de marketing">
-													{plan.useCampaigns ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} Campanhas
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Permite agendar mensagens ou tarefas">
-													{plan.useSchedules ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} Agendamentos
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Habilita chat interno para comunicação entre usuários">
-													{plan.useInternalChat ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} Chat Interno
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Acesso a APIs externas para integração com outros sistemas">
-													{plan.useExternalApi ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} API Externa
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Habilita funcionalidades de Kanban para organização de tarefas">
-													{plan.useKanban ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} Kanban
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Integração com OpenAI para automação e IA">
-													{plan.useOpenAi ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} OpenAI
-												</Tooltip>
-												{" | "}
-												<Tooltip title="Permite integração com outros sistemas ou serviços">
-													{plan.useIntegrations ? <CheckIcon color="primary" /> : <CloseIcon color="error" />} Integrações
-												</Tooltip>
-											</div>
 										</MenuItem>
                     ))}
                   </Field>
