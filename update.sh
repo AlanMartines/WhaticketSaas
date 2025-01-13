@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -e  # Interrompe o script em caso de erro
-set -o pipefail  # Captura erros em comandos encadeados
-
 # Variáveis
 BACKEND_DIR="backend"
 FRONTEND_DIR="frontend"
