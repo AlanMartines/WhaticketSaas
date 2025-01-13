@@ -20,6 +20,8 @@ import {
   Select,
   makeStyles,
 } from "@material-ui/core";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 import InputMask from "react-input-mask";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import logo from "../../assets/logo.png";
@@ -197,14 +199,14 @@ const SignUp = () => {
                     {plans.map((plan) => (
 											<MenuItem key={plan.id} value={plan.id}>
 											{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-											<Typography variant="body2" style={{ marginLeft: "1rem" }}>
-												{plan.useCampaigns ? "Campanhas Ativadas" : "Sem Campanhas"} |{" "}
-												{plan.useSchedules ? "Agendamentos Ativados" : "Sem Agendamentos"} |{" "}
-												{plan.useInternalChat ? "Chat Interno Ativado" : "Sem Chat Interno"} |{" "}
-												{plan.useExternalApi ? "API Externa Ativada" : "Sem API Externa"} |{" "}
-												{plan.useKanban ? "Kanban Ativado" : "Sem Kanban"} |{" "}
-												{plan.useOpenAi ? "OpenAI Ativado" : "Sem OpenAI"} |{" "}
-												{plan.useIntegrations ? "Integrações Ativadas" : "Sem Integrações"}
+											<Typography variant="body2" style={{ marginTop: "0.5rem", color: "gray" }}>
+												{plan.useCampaigns ? <CheckIcon /> : <CloseIcon />} Campanhas |{" "}
+												{plan.useSchedules ? <CheckIcon /> : <CloseIcon />} Agendamentos |{" "}
+												{plan.useInternalChat ? <CheckIcon /> : <CloseIcon />} Chat Interno |{" "}
+												{plan.useExternalApi ? <CheckIcon /> : <CloseIcon />} API Externa |{" "}
+												{plan.useKanban ? <CheckIcon /> : <CloseIcon />} Kanban |{" "}
+												{plan.useOpenAi ? <CheckIcon /> : <CloseIcon />} OpenAI |{" "}
+												{plan.useIntegrations ? <CheckIcon /> : <CloseIcon />} Integrações
 											</Typography>
 										</MenuItem>
                     ))}
