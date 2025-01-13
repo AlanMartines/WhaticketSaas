@@ -1,3 +1,4 @@
+/*
 {
   "compilerOptions": {
     "target": "es2020",
@@ -11,4 +12,24 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
+}
+*/
+{
+  "compilerOptions": {
+    "target": "es2020", // Mantém a compatibilidade com funcionalidades modernas do JavaScript
+    "module": "commonjs", // Indicado para ambientes Node.js
+    "outDir": "./dist", // Saída do build
+    "strict": true, // Ativa o modo estrito do TypeScript para maior segurança no código
+    "strictPropertyInitialization": false, // Mantém desativado, se necessário, para inicializações flexíveis
+    "esModuleInterop": true, // Permite interoperabilidade com módulos ES6
+    "experimentalDecorators": true, // Necessário se você usa decoradores (por exemplo, em frameworks como NestJS)
+    "emitDecoratorMetadata": true, // Gera metadados para decoradores
+    "skipLibCheck": true, // Ignora verificações em bibliotecas para acelerar a compilação
+    "forceConsistentCasingInFileNames": true, // Evita problemas em sistemas com diferenciação entre maiúsculas e minúsculas
+    "lib": ["es2020", "dom"], // Adiciona suporte para APIs modernas e o ambiente do navegador, se necessário
+    "resolveJsonModule": true, // Permite importar arquivos JSON diretamente
+    "moduleResolution": "node" // Garante resolução de módulos no padrão Node.js
+  },
+  "include": ["src/**/*.ts"], // Inclui todos os arquivos TypeScript na pasta `src`
+  "exclude": ["node_modules", "dist"] // Exclui arquivos compilados e dependências
 }
