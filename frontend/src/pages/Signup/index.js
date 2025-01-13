@@ -6,19 +6,19 @@ import { Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import {
-  Avatar,
-  Button,
-  CssBaseline,
-  TextField,
-  Link,
-  Grid,
-  Box,
-  Container,
-  Typography,
-  MenuItem,
-  InputLabel,
-  Select,
-  makeStyles,
+	Avatar,
+	Button,
+	CssBaseline,
+	TextField,
+	Link,
+	Grid,
+	Box,
+	Container,
+	Typography,
+	MenuItem,
+	InputLabel,
+	Select,
+	makeStyles,
 } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import CheckIcon from "@material-ui/icons/Check";
@@ -33,39 +33,39 @@ import usePlans from "../../hooks/usePlans";
 import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%",
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  logo: {
-    margin: "0 auto",
-    height: "80px",
-    width: "100%",
-  },
+	paper: {
+		marginTop: theme.spacing(8),
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+	},
+	avatar: {
+		margin: theme.spacing(1),
+		backgroundColor: theme.palette.secondary.main,
+	},
+	form: {
+		width: "100%",
+		marginTop: theme.spacing(3),
+	},
+	submit: {
+		margin: theme.spacing(3, 0, 2),
+	},
+	logo: {
+		margin: "0 auto",
+		height: "80px",
+		width: "100%",
+	},
 }));
 
 const Copyright = () => (
-  <Typography variant="body2" color="textSecondary" align="center">
-    {"Copyright © "}
-    <Link color="inherit" href="#">
-      Alan Martines
-    </Link>{" "}
-    {new Date().getFullYear()}
-    {"."}
-  </Typography>
+	<Typography variant="body2" color="textSecondary" align="center">
+		{"Copyright © "}
+		<Link color="inherit" href="#">
+			Alan Martines
+		</Link>{" "}
+		{new Date().getFullYear()}
+		{"."}
+	</Typography>
 );
 
 const UserSchema = Yup.object().shape({
@@ -76,82 +76,82 @@ const UserSchema = Yup.object().shape({
 });
 
 const SignUp = () => {
-  const classes = useStyles();
-  const history = useHistory();
-  const [plans, setPlans] = useState([]);
-  const { list: listPlans } = usePlans();
-  const dueDate = moment().add(3, "days").format();
+	const classes = useStyles();
+	const history = useHistory();
+	const [plans, setPlans] = useState([]);
+	const { list: listPlans } = usePlans();
+	const dueDate = moment().add(3, "days").format();
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const plans = await listPlans();
-        setPlans(plans);
-      } catch (error) {
-        toastError(error);
-      }
-    };
-    fetchPlans();
-  }, [listPlans]);
+	useEffect(() => {
+		const fetchPlans = async () => {
+			try {
+				const plans = await listPlans();
+				setPlans(plans);
+			} catch (error) {
+				toastError(error);
+			}
+		};
+		fetchPlans();
+	}, [listPlans]);
 
-  const handleSignUp = async (values) => {
-    const payload = {
-      ...values,
-      recurrence: "MENSAL",
-      dueDate,
-      status: "t",
-      campaignsEnabled: true,
-    };
+	const handleSignUp = async (values) => {
+		const payload = {
+			...values,
+			recurrence: "MENSAL",
+			dueDate,
+			status: "t",
+			campaignsEnabled: true,
+		};
 
-    try {
-      await openApi.post("/companies/cadastro", payload);
-      toast.success(i18n.t("signup.toasts.success"));
-      history.push("/login");
-    } catch (error) {
-      toastError(error);
-    }
-  };
+		try {
+			await openApi.post("/companies/cadastro", payload);
+			toast.success(i18n.t("signup.toasts.success"));
+			history.push("/login");
+		} catch (error) {
+			toastError(error);
+		}
+	};
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <div className={classes.paper}>
-        <img className={classes.logo} src={logo} alt="Logo" />
-        <Formik
-          initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
-          validationSchema={UserSchema}
-          onSubmit={(values, actions) => {
-            handleSignUp(values);
-            actions.setSubmitting(false);
-          }}
-        >
-          {({ touched, errors }) => (
-            <Form className={classes.form}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <Field
-                    as={TextField}
-                    name="name"
-                    variant="outlined"
-                    fullWidth
-                    id="name"
-                    label="Nome da Empresa"
-                    error={touched.name && Boolean(errors.name)}
-                    helperText={touched.name && errors.name}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Field
-                    as={TextField}
-                    name="email"
-                    variant="outlined"
-                    fullWidth
-                    id="email"
-                    label="E-mail"
-                    error={touched.email && Boolean(errors.email)}
-                    helperText={touched.email && errors.email}
-                  />
-                </Grid>
+	return (
+		<Container component="main" maxWidth="xs">
+			<CssBaseline />
+			<div className={classes.paper}>
+				<img className={classes.logo} src={logo} alt="Logo" />
+				<Formik
+					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
+					validationSchema={UserSchema}
+					onSubmit={(values, actions) => {
+						handleSignUp(values);
+						actions.setSubmitting(false);
+					}}
+				>
+					{({ touched, errors }) => (
+						<Form className={classes.form}>
+							<Grid container spacing={2}>
+								<Grid item xs={12}>
+									<Field
+										as={TextField}
+										name="name"
+										variant="outlined"
+										fullWidth
+										id="name"
+										label="Nome da Empresa"
+										error={touched.name && Boolean(errors.name)}
+										helperText={touched.name && errors.name}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<Field
+										as={TextField}
+										name="email"
+										variant="outlined"
+										fullWidth
+										id="email"
+										label="E-mail"
+										error={touched.email && Boolean(errors.email)}
+										helperText={touched.email && errors.email}
+									/>
+								</Grid>
 								<Grid item xs={12}>
 									<Field name="phone">
 										{({ field, meta }) => (
@@ -176,21 +176,21 @@ const SignUp = () => {
 										)}
 									</Field>
 								</Grid>
-                <Grid item xs={12}>
-                  <Field
-                    as={TextField}
-                    name="password"
-                    variant="outlined"
-                    fullWidth
-                    id="password"
-                    label="Senha"
-                    type="password"
-                    error={touched.password && Boolean(errors.password)}
-                    helperText={touched.password && errors.password}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <InputLabel htmlFor="plan-selection">Plano</InputLabel>
+								<Grid item xs={12}>
+									<Field
+										as={TextField}
+										name="password"
+										variant="outlined"
+										fullWidth
+										id="password"
+										label="Senha"
+										type="password"
+										error={touched.password && Boolean(errors.password)}
+										helperText={touched.password && errors.password}
+									/>
+								</Grid>
+								<Grid item xs={12}>
+									<InputLabel htmlFor="plan-selection">Plano</InputLabel>
 									<Field
 										as={Select}
 										name="planId"
@@ -199,7 +199,19 @@ const SignUp = () => {
 										id="plan-selection"
 									>
 										{plans
-											.sort((a, b) => a.name.localeCompare(b.name)) // Ordena os planos em ordem alfabética pelo nome
+											.sort((a, b) => {
+												// Extrair números no início do nome para comparação numérica
+												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
+												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
+
+												// Se ambos possuem números, ordene numericamente
+												if (numA !== numB) {
+													return numA - numB;
+												}
+
+												// Caso contrário, ordene alfabeticamente
+												return a.name.localeCompare(b.name);
+											})
 											.map((plan) => (
 												<MenuItem key={plan.id} value={plan.id}>
 													{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
@@ -215,33 +227,34 @@ const SignUp = () => {
 												</MenuItem>
 											))}
 									</Field>
-                </Grid>
-              </Grid>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-              >
-                {i18n.t("signup.buttons.submit")}
-              </Button>
-              <Grid container justify="flex-end">
-                <Grid item>
-                  <Link component={RouterLink} to="/login" variant="body2">
-                    {i18n.t("signup.buttons.login")}
-                  </Link>
-                </Grid>
-              </Grid>
-            </Form>
-          )}
-        </Formik>
-      </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
-    </Container>
-  );
+
+								</Grid>
+							</Grid>
+							<Button
+								type="submit"
+								fullWidth
+								variant="contained"
+								color="primary"
+								className={classes.submit}
+							>
+								{i18n.t("signup.buttons.submit")}
+							</Button>
+							<Grid container justify="flex-end">
+								<Grid item>
+									<Link component={RouterLink} to="/login" variant="body2">
+										{i18n.t("signup.buttons.login")}
+									</Link>
+								</Grid>
+							</Grid>
+						</Form>
+					)}
+				</Formik>
+			</div>
+			<Box mt={5}>
+				<Copyright />
+			</Box>
+		</Container>
+	);
 };
 
 export default SignUp;
