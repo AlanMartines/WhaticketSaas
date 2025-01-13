@@ -61,7 +61,7 @@ const Copyright = () => (
 	<Typography variant="body2" color="textSecondary" align="center">
 		{"Copyright © "}
 		<Link color="inherit" href="#">
-			Whatickt
+			Whaticket
 		</Link>{" "}
 		{new Date().getFullYear()}
 		{"."}
@@ -117,6 +117,10 @@ const SignUp = () => {
 			<CssBaseline />
 			<div className={classes.paper}>
 				<img className={classes.logo} src={logo} alt="Logo" />
+				{/*<Typography component="h1" variant="h5">
+					{i18n.t("signup.title")}
+				</Typography>*/}
+				{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
 				<Formik
 					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
 					validationSchema={UserSchema}
