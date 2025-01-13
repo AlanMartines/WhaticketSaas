@@ -81,7 +81,7 @@ const SignUp = () => {
 	const history = useHistory();
 	const [plans, setPlans] = useState([]);
 	const { list: listPlans } = usePlans();
-	const dueDate = moment().add(3, "days").format();
+	const dueDate = moment().add(5, "days").format();
 
 	useEffect(() => {
 		const fetchPlans = async () => {
