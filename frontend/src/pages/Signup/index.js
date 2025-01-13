@@ -195,9 +195,18 @@ const SignUp = () => {
                     id="plan-selection"
                   >
                     {plans.map((plan) => (
-                      <MenuItem key={plan.id} value={plan.id}>
-                        {`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-                      </MenuItem>
+											<MenuItem key={plan.id} value={plan.id}>
+											{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+											<Typography variant="body2" style={{ marginLeft: "1rem" }}>
+												{plan.useCampaigns ? "Campanhas Ativadas" : "Sem Campanhas"} |{" "}
+												{plan.useSchedules ? "Agendamentos Ativados" : "Sem Agendamentos"} |{" "}
+												{plan.useInternalChat ? "Chat Interno Ativado" : "Sem Chat Interno"} |{" "}
+												{plan.useExternalApi ? "API Externa Ativada" : "Sem API Externa"} |{" "}
+												{plan.useKanban ? "Kanban Ativado" : "Sem Kanban"} |{" "}
+												{plan.useOpenAi ? "OpenAI Ativado" : "Sem OpenAI"} |{" "}
+												{plan.useIntegrations ? "Integrações Ativadas" : "Sem Integrações"}
+											</Typography>
+										</MenuItem>
                     ))}
                   </Field>
                 </Grid>
