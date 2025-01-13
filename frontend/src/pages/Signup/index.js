@@ -200,34 +200,43 @@ const SignUp = () => {
 									>
 										{plans
 											.sort((a, b) => {
-												// Extrair números no início do nome para comparação numérica
 												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
 												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
 
-												// Se ambos possuem números, ordene numericamente
 												if (numA !== numB) {
 													return numA - numB;
 												}
 
-												// Caso contrário, ordene alfabeticamente
 												return a.name.localeCompare(b.name);
 											})
 											.map((plan) => (
 												<MenuItem key={plan.id} value={plan.id}>
-													{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-													<Typography variant="body2" style={{ marginTop: "0.5rem", color: "gray" }}>
-														{plan.useCampaigns ? <CheckIcon /> : <CloseIcon />} Campanhas |{" "}
-														{plan.useSchedules ? <CheckIcon /> : <CloseIcon />} Agendamentos |{" "}
-														{plan.useInternalChat ? <CheckIcon /> : <CloseIcon />} Chat Interno |{" "}
-														{plan.useExternalApi ? <CheckIcon /> : <CloseIcon />} API Externa |{" "}
-														{plan.useKanban ? <CheckIcon /> : <CloseIcon />} Kanban |{" "}
-														{plan.useOpenAi ? <CheckIcon /> : <CloseIcon />} OpenAI |{" "}
-														{plan.useIntegrations ? <CheckIcon /> : <CloseIcon />} Integrações
-													</Typography>
+													<div style={{ display: "flex", flexDirection: "column" }}>
+														<Typography variant="body1" style={{ fontWeight: "bold" }}>
+															{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+														</Typography>
+														<Tooltip
+															title={
+																<div>
+																	<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
+																	<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
+																	<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
+																	<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
+																	<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
+																	<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
+																	<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
+																</div>
+															}
+															arrow
+														>
+															<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
+																Passe o mouse para ver os recursos
+															</Typography>
+														</Tooltip>
+													</div>
 												</MenuItem>
 											))}
 									</Field>
-
 								</Grid>
 							</Grid>
 							<Button
