@@ -22,6 +22,7 @@ if [ -d "$BACKEND_DIR" ]; then
     rm -rf package-lock.json
     npm cache clean --force
     rm -rf node_modules
+    npm install -g typescript
     npm install
     rm -rf dist
     npm run build
