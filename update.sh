@@ -20,7 +20,7 @@ if [ -d "$BACKEND_DIR" ]; then
     echo "Updating backend dependencies and building..."
     cd "$BACKEND_DIR"
     rm -rf package-lock.json
-    npm install
+    npm install --legacy-peer-deps
     rm -rf dist
     npm run build
     npx sequelize db:migrate
@@ -37,7 +37,7 @@ if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building..."
     cd "$FRONTEND_DIR"
     rm -rf package-lock.json
-    npm install
+    npm install --legacy-peer-deps
     rm -rf build
     npm run build
     cd ..
