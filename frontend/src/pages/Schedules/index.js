@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useCallback, useContext } from "react";
+import React, { useState, useEffect, useReducer, useCallback, useContext, useRef } from "react";
 import { toast } from "react-toastify";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
@@ -18,7 +18,6 @@ import toastError from "../../errors/toastError";
 import moment from "moment";
 import { SocketContext } from "../../context/Socket/SocketContext";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import usePlans from "../../hooks/usePlans";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "moment/locale/pt-br";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -26,23 +25,16 @@ import SearchIcon from "@material-ui/icons/Search";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import EditIcon from "@material-ui/icons/Edit";
 
-import "./Schedules.css"; // Importe o arquivo CSS
+import "./Schedules.css"; 
 
-// Defina a função getUrlParam antes de usá-la
-function getUrlParam(paramName) {
+const getUrlParam = (paramName) => {
   const searchParams = new URLSearchParams(window.location.search);
   return searchParams.get(paramName);
-}
-
-const eventTitleStyle = {
-  fontSize: "14px", // Defina um tamanho de fonte menor
-  overflow: "hidden", // Oculte qualquer conteúdo excedente
-  whiteSpace: "nowrap", // Evite a quebra de linha do texto
-  textOverflow: "ellipsis", // Exiba "..." se o texto for muito longo
 };
 
 const localizer = momentLocalizer(moment);
-var defaultMessages = {
+
+const defaultMessages = {
   date: "Data",
   time: "Hora",
   event: "Evento",
@@ -58,38 +50,31 @@ var defaultMessages = {
   today: "Hoje",
   agenda: "Agenda",
   noEventsInRange: "Não há agendamentos no período.",
-  showMore: function showMore(total) {
-    return "+" + total + " mais";
-  }
+  showMore: (total) => `+${total} mais`,
 };
 
 const reducer = (state, action) => {
-  if (action.type === "LOAD_SCHEDULES") {
-    return [...state, ...action.payload];
+  switch (action.type) {
+    case "LOAD_SCHEDULES":
+      return [...state, ...action.payload];
+
+    case "UPDATE_SCHEDULES":
+      const updatedSchedules = state.map((s) =>
+        s.id === action.payload.id ? action.payload : s
+      );
+      return state.some((s) => s.id === action.payload.id)
+        ? updatedSchedules
+        : [action.payload, ...state];
+
+    case "DELETE_SCHEDULE":
+      return state.filter((s) => s.id !== action.payload);
+
+    case "RESET":
+      return [];
+
+    default:
+      return state;
   }
-
-  if (action.type === "UPDATE_SCHEDULES") {
-    const schedule = action.payload;
-    const scheduleIndex = state.findIndex((s) => s.id === schedule.id);
-
-    if (scheduleIndex !== -1) {
-      state[scheduleIndex] = schedule;
-      return [...state];
-    } else {
-      return [schedule, ...state];
-    }
-  }
-
-  if (action.type === "DELETE_SCHEDULE") {
-    const scheduleId = action.payload;
-    return state.filter((s) => s.id !== scheduleId);
-  }
-
-  if (action.type === "RESET") {
-    return [];
-  }
-
-  return state;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -104,8 +89,8 @@ const useStyles = makeStyles((theme) => ({
 const Schedules = () => {
   const classes = useStyles();
   const history = useHistory();
-
   const { user } = useContext(AuthContext);
+  const socketManager = useContext(SocketContext);
 
   const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
@@ -118,8 +103,10 @@ const Schedules = () => {
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [contactId, setContactId] = useState(+getUrlParam("contactId"));
 
+  const debounceTimeout = useRef(null);
 
   const fetchSchedules = useCallback(async () => {
+    setLoading(true);
     try {
       const { data } = await api.get("/schedules/", {
         params: { searchParam, pageNumber },
@@ -127,19 +114,12 @@ const Schedules = () => {
 
       dispatch({ type: "LOAD_SCHEDULES", payload: data.schedules });
       setHasMore(data.hasMore);
-      setLoading(false);
     } catch (err) {
       toastError(err);
+    } finally {
+      setLoading(false);
     }
   }, [searchParam, pageNumber]);
-
-  const handleOpenScheduleModalFromContactId = useCallback(() => {
-    if (contactId) {
-      handleOpenScheduleModal();
-    }
-  }, [contactId]);
-
-  const socketManager = useContext(SocketContext);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -147,23 +127,16 @@ const Schedules = () => {
   }, [searchParam]);
 
   useEffect(() => {
-    setLoading(true);
-    const delayDebounceFn = setTimeout(() => {
-      fetchSchedules();
-    }, 500);
+    const delayDebounceFn = setTimeout(fetchSchedules, 500);
     return () => clearTimeout(delayDebounceFn);
-  }, [
-    searchParam,
-    pageNumber,
-    contactId,
-    fetchSchedules,
-    handleOpenScheduleModalFromContactId,
-  ]);
+  }, [searchParam, pageNumber, fetchSchedules]);
 
   useEffect(() => {
-    handleOpenScheduleModalFromContactId();
-    const socket = socketManager.getSocket(user.companyId);
+    if (contactId) {
+      setScheduleModalOpen(true);
+    }
 
+    const socket = socketManager.getSocket(user.companyId);
     socket.on(`company${user.companyId}-schedule`, (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_SCHEDULES", payload: data.schedule });
@@ -174,76 +147,40 @@ const Schedules = () => {
       }
     });
 
-    return () => {
-      socket.disconnect();
-    };
-  }, [handleOpenScheduleModalFromContactId, socketManager, user]);
+    socket.on("disconnect", () => {
+      setTimeout(() => {
+        socket.connect();
+      }, 5000);
+    });
 
-  const cleanContact = () => {
-    setContactId("");
-  };
-
-  const handleOpenScheduleModal = () => {
-    setSelectedSchedule(null);
-    setScheduleModalOpen(true);
-  };
-
-  const handleCloseScheduleModal = () => {
-    setSelectedSchedule(null);
-    setScheduleModalOpen(false);
-  };
+    return () => socket.disconnect();
+  }, [socketManager, user]);
 
   const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+    clearTimeout(debounceTimeout.current);
+    const value = event.target.value.toLowerCase();
 
-  const handleEditSchedule = (schedule) => {
-    setSelectedSchedule(schedule);
-    setScheduleModalOpen(true);
+    debounceTimeout.current = setTimeout(() => {
+      setSearchParam(value);
+      setPageNumber(1);
+    }, 300);
   };
 
   const handleDeleteSchedule = async (scheduleId) => {
     try {
       await api.delete(`/schedules/${scheduleId}`);
       toast.success(i18n.t("schedules.toasts.deleted"));
+      dispatch({ type: "DELETE_SCHEDULE", payload: scheduleId });
     } catch (err) {
       toastError(err);
     }
     setDeletingSchedule(null);
-    setSearchParam("");
-    setPageNumber(1);
-
-    dispatch({ type: "RESET" });
-    setPageNumber(1);
-    await fetchSchedules();
-  };
-
-  const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
-  };
-
-  const handleScroll = (e) => {
-    if (!hasMore || loading) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    if (scrollHeight - (scrollTop + 100) < clientHeight) {
-      loadMore();
-    }
-  };
-
-  const truncate = (str, len) => {
-    if (str.length > len) {
-      return str.substring(0, len) + "...";
-    }
-    return str;
   };
 
   return (
     <MainContainer>
       <ConfirmationModal
-        title={
-          deletingSchedule &&
-          `${i18n.t("schedules.confirmationModal.deleteTitle")}`
-        }
+        title={deletingSchedule && i18n.t("schedules.confirmationModal.deleteTitle")}
         open={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
         onConfirm={() => handleDeleteSchedule(deletingSchedule.id)}
@@ -252,12 +189,9 @@ const Schedules = () => {
       </ConfirmationModal>
       <ScheduleModal
         open={scheduleModalOpen}
-        onClose={handleCloseScheduleModal}
+        onClose={() => setScheduleModalOpen(false)}
         reload={fetchSchedules}
-        aria-labelledby="form-dialog-title"
-        scheduleId={selectedSchedule && selectedSchedule.id}
-        contactId={contactId}
-        cleanContact={cleanContact}
+        scheduleId={selectedSchedule?.id}
       />
       <MainHeader>
         <Title>{i18n.t("schedules.title")} ({schedules.length})</Title>
@@ -275,42 +209,19 @@ const Schedules = () => {
               ),
             }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenScheduleModal}
-          >
+          <Button variant="contained" color="primary" onClick={() => setScheduleModalOpen(true)}>
             {i18n.t("schedules.buttons.add")}
           </Button>
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Paper className={classes.mainPaper} variant="outlined" onScroll={handleScroll}>
+      <Paper className={classes.mainPaper}>
         <Calendar
           messages={defaultMessages}
-          formats={{
-          agendaDateFormat: "DD/MM ddd",
-          weekdayFormat: "dddd"
-      }}
           localizer={localizer}
-          events={schedules.map((schedule) => ({
-            title: (
-              <div className="event-container">
-                <div style={eventTitleStyle}>{schedule.contact.name}</div>
-                <DeleteOutlineIcon
-                  onClick={() => handleDeleteSchedule(schedule.id)}
-                  className="delete-icon"
-                />
-                <EditIcon
-                  onClick={() => {
-                    handleEditSchedule(schedule);
-                    setScheduleModalOpen(true);
-                  }}
-                  className="edit-icon"
-                />
-              </div>
-            ),
-            start: new Date(schedule.sendAt),
-            end: new Date(schedule.sendAt),
+          events={schedules.map((s) => ({
+            title: s.contact.name,
+            start: new Date(s.sendAt),
+            end: new Date(s.sendAt),
           }))}
           startAccessor="start"
           endAccessor="end"
