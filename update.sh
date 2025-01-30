@@ -20,6 +20,7 @@ if [ -d "$BACKEND_DIR" ]; then
     echo "Updating backend dependencies and building..."
     cd "$BACKEND_DIR"
     rm -rf package-lock.json
+    npm cache clean --force
     npm install
     rm -rf dist
     npm run build
@@ -37,6 +38,7 @@ if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building..."
     cd "$FRONTEND_DIR"
     rm -rf package-lock.json
+    npm cache clean --force
     npm install
     rm -rf build
     npm run build
