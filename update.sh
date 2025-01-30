@@ -45,7 +45,7 @@ if [ -d "$FRONTEND_DIR" ]; then
     rm -rf package-lock.json;
     npm cache clean --force;
     rm -rf node_modules;
-    npm install;
+    npm install --legacy-peer-deps;
     rm -rf build;
     npm run build;
     cd ..;
