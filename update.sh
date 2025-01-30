@@ -21,6 +21,7 @@ if [ -d "$BACKEND_DIR" ]; then
     cd "$BACKEND_DIR"
     rm -rf package-lock.json
     npm cache clean --force
+    rm -rf node_modules
     npm install
     rm -rf dist
     npm run build
@@ -39,6 +40,7 @@ if [ -d "$FRONTEND_DIR" ]; then
     cd "$FRONTEND_DIR"
     rm -rf package-lock.json
     npm cache clean --force
+    rm -rf node_modules
     npm install
     rm -rf build
     npm run build
