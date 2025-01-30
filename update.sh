@@ -58,4 +58,4 @@ else
     exit 1
 fi
 
-echo "Whaticket update process completed successfully. Enjoy!"
+echo "Whaticket update process completed successfully.!"
