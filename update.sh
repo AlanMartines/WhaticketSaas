@@ -19,6 +19,7 @@ fi
 if [ -d "$BACKEND_DIR" ]; then
     echo "Updating backend dependencies and building..."
     cd "$BACKEND_DIR"
+    pwd
     rm -rf package-lock.json
     npm cache clean --force
     rm -rf node_modules
@@ -29,6 +30,7 @@ if [ -d "$BACKEND_DIR" ]; then
     npx sequelize db:migrate
     npx sequelize db:seed
     cd ..
+    pwd
     echo "Backend updated successfully."
 else
     echo "Backend directory '$BACKEND_DIR' not found. Skipping backend update."
@@ -39,6 +41,7 @@ fi
 if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building..."
     cd "$FRONTEND_DIR"
+    pwd
     rm -rf package-lock.json
     npm cache clean --force
     rm -rf node_modules
@@ -46,6 +49,7 @@ if [ -d "$FRONTEND_DIR" ]; then
     rm -rf build
     npm run build
     cd ..
+    pwd
     echo "Frontend updated successfully."
 else
     echo "Frontend directory '$FRONTEND_DIR' not found. Skipping frontend update."
