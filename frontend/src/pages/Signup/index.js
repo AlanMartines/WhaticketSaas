@@ -57,6 +57,19 @@ const Copyright = () => {
 };
 
 const useStyles = makeStyles((theme) => ({
+	root: {
+		width: "100vw",
+		height: "100vh",
+		backgroundImage: "url(https://i.imgur.com/gB0s3Zf.jpeg)",
+		backgroundRepeat: "no-repeat",
+		backgroundSize: "100% 100%",
+		backgroundPosition: "center",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+		textAlign: "center",
+	},
 	paper: {
 		marginTop: theme.spacing(8),
 		display: "flex",
