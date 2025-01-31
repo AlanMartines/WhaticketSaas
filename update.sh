@@ -42,11 +42,11 @@ if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building...";
     cd "$FRONTEND_DIR";
     pwd;
-    # rm -rf package-lock.json;
+    rm -rf package-lock.json;
     rm -rf node_modules;
     rm -rf build;
     npm cache clean --force;
-    #npm install --legacy-peer-deps;
+    # npm install --legacy-peer-deps;
     npm install;
     npm run build;
     cd ..;
