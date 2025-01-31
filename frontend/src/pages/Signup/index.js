@@ -38,6 +38,8 @@ const copyright = process.env.REACT_APP_COPYRIGHT || "";
 const copyrightYear = process.env.REACT_APP_COPYRIGHT_YEAR || "";
 const copyrightUrl = process.env.REACT_APP_COPYRIGHT_URL || "";
 
+const dueDateSet = process.env.REACT_APP_TRIALEXPIRATION || 7;
+
 const Copyright = () => {
 	return (
 		<Typography variant="body2" color="textSecondary" align="center">
@@ -80,10 +82,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const UserSchema = Yup.object().shape({
-	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	name: Yup.string().min(4, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
 	phone: Yup.string().required("Obrigatório"),
-	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	password: Yup.string().min(8, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 });
 
 const SignUp = () => {
@@ -91,7 +93,7 @@ const SignUp = () => {
 	const history = useHistory();
 	const [plans, setPlans] = useState([]);
 	const { list: listPlans } = usePlans();
-	const dueDate = moment().add(3, "days").format();
+	const dueDate = moment().add(dueDateSet, "days").format();
 
 	useEffect(() => {
 		const fetchPlans = async () => {
