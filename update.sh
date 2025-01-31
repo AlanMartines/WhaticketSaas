@@ -46,8 +46,8 @@ if [ -d "$FRONTEND_DIR" ]; then
     rm -rf node_modules;
     rm -rf build;
     npm cache clean --force;
-    # npm install --legacy-peer-deps;
-    npm install;
+    npm install --legacy-peer-deps;
+    # npm install;
     npm run build;
     cd ..;
     pwd;
