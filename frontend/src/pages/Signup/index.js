@@ -139,160 +139,162 @@ const SignUp = () => {
 	};
 
 	return (
-		<Container component="main" maxWidth="xs">
-			<CssBaseline />
-			<div className={classes.paper}>
-				<img className={classes.logo} src={logo} alt="Logo" />
-				{/*<Typography component="h1" variant="h5">
-					{i18n.t("signup.title")}
-				</Typography>*/}
-				{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
-				<Formik
-					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
-					validationSchema={UserSchema}
-					onSubmit={(values, actions) => {
-						handleSignUp(values);
-						actions.setSubmitting(false);
-					}}
-				>
-					{({ touched, errors }) => (
-						<Form className={classes.form}>
-							<Grid container spacing={2}>
-								<Grid item xs={12}>
-									<Field
-										as={TextField}
-										name="name"
-										variant="outlined"
-										fullWidth
-										id="name"
-										label="Nome da Empresa"
-										error={touched.name && Boolean(errors.name)}
-										helperText={touched.name && errors.name}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<Field
-										as={TextField}
-										name="email"
-										variant="outlined"
-										fullWidth
-										id="email"
-										label="E-mail"
-										error={touched.email && Boolean(errors.email)}
-										helperText={touched.email && errors.email}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<Field name="phone">
-										{({ field, meta }) => (
-											<InputMask
-												mask="(99) 99999-9999"
-												value={field.value}
-												onChange={field.onChange}
-												onBlur={field.onBlur}
-											>
-												{() => (
-													<TextField
-														{...field}
-														variant="outlined"
-														fullWidth
-														id="phone"
-														label="Telefone"
-														error={meta.touched && Boolean(meta.error)}
-														helperText={meta.touched && meta.error}
-													/>
-												)}
-											</InputMask>
-										)}
-									</Field>
-								</Grid>
-								<Grid item xs={12}>
-									<Field
-										as={TextField}
-										name="password"
-										variant="outlined"
-										fullWidth
-										id="password"
-										label="Senha"
-										type="password"
-										error={touched.password && Boolean(errors.password)}
-										helperText={touched.password && errors.password}
-									/>
-								</Grid>
-								<Grid item xs={12}>
-									<InputLabel htmlFor="plan-selection">Plano</InputLabel>
-									<Field
-										as={Select}
-										name="planId"
-										variant="outlined"
-										fullWidth
-										id="plan-selection"
-									>
-										{plans
-											.sort((a, b) => {
-												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
-												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
+		<div className={classes.root}>
+			<Container component="main" maxWidth="xs">
+				<CssBaseline />
+				<div className={classes.paper}>
+					<img className={classes.logo} src={logo} alt="Logo" />
+					{/*<Typography component="h1" variant="h5">
+						{i18n.t("signup.title")}
+					</Typography>*/}
+					{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
+					<Formik
+						initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
+						validationSchema={UserSchema}
+						onSubmit={(values, actions) => {
+							handleSignUp(values);
+							actions.setSubmitting(false);
+						}}
+					>
+						{({ touched, errors }) => (
+							<Form className={classes.form}>
+								<Grid container spacing={2}>
+									<Grid item xs={12}>
+										<Field
+											as={TextField}
+											name="name"
+											variant="outlined"
+											fullWidth
+											id="name"
+											label="Nome da Empresa"
+											error={touched.name && Boolean(errors.name)}
+											helperText={touched.name && errors.name}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<Field
+											as={TextField}
+											name="email"
+											variant="outlined"
+											fullWidth
+											id="email"
+											label="E-mail"
+											error={touched.email && Boolean(errors.email)}
+											helperText={touched.email && errors.email}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<Field name="phone">
+											{({ field, meta }) => (
+												<InputMask
+													mask="(99) 99999-9999"
+													value={field.value}
+													onChange={field.onChange}
+													onBlur={field.onBlur}
+												>
+													{() => (
+														<TextField
+															{...field}
+															variant="outlined"
+															fullWidth
+															id="phone"
+															label="Telefone"
+															error={meta.touched && Boolean(meta.error)}
+															helperText={meta.touched && meta.error}
+														/>
+													)}
+												</InputMask>
+											)}
+										</Field>
+									</Grid>
+									<Grid item xs={12}>
+										<Field
+											as={TextField}
+											name="password"
+											variant="outlined"
+											fullWidth
+											id="password"
+											label="Senha"
+											type="password"
+											error={touched.password && Boolean(errors.password)}
+											helperText={touched.password && errors.password}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+										<InputLabel htmlFor="plan-selection">Plano</InputLabel>
+										<Field
+											as={Select}
+											name="planId"
+											variant="outlined"
+											fullWidth
+											id="plan-selection"
+										>
+											{plans
+												.sort((a, b) => {
+													const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
+													const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
 
-												if (numA !== numB) {
-													return numA - numB;
-												}
+													if (numA !== numB) {
+														return numA - numB;
+													}
 
-												return a.name.localeCompare(b.name);
-											})
-											.map((plan) => (
-												<MenuItem key={plan.id} value={plan.id}>
-													<div style={{ display: "flex", flexDirection: "column" }}>
-														<Typography variant="body1" style={{ fontWeight: "bold" }}>
-															{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-														</Typography>
-														<Tooltip
-															title={
-																<div>
-																	<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
-																	<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
-																	<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
-																	<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
-																	<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
-																	<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
-																	<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
-																</div>
-															}
-															arrow
-														>
-															<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
-																Passe o mouse para ver os recursos
+													return a.name.localeCompare(b.name);
+												})
+												.map((plan) => (
+													<MenuItem key={plan.id} value={plan.id}>
+														<div style={{ display: "flex", flexDirection: "column" }}>
+															<Typography variant="body1" style={{ fontWeight: "bold" }}>
+																{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
 															</Typography>
-														</Tooltip>
-													</div>
-												</MenuItem>
-											))}
-									</Field>
+															<Tooltip
+																title={
+																	<div>
+																		<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
+																		<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
+																		<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
+																		<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
+																		<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
+																		<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
+																		<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
+																	</div>
+																}
+																arrow
+															>
+																<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
+																	Passe o mouse para ver os recursos
+																</Typography>
+															</Tooltip>
+														</div>
+													</MenuItem>
+												))}
+										</Field>
+									</Grid>
 								</Grid>
-							</Grid>
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								color="primary"
-								className={classes.submit}
-							>
-								{i18n.t("signup.buttons.submit")}
-							</Button>
-							<Grid container justify="flex-end">
-								<Grid item>
-									<Link component={RouterLink} to="/login" variant="body2">
-										{i18n.t("signup.buttons.login")}
-									</Link>
+								<Button
+									type="submit"
+									fullWidth
+									variant="contained"
+									color="primary"
+									className={classes.submit}
+								>
+									{i18n.t("signup.buttons.submit")}
+								</Button>
+								<Grid container justify="flex-end">
+									<Grid item>
+										<Link component={RouterLink} to="/login" variant="body2">
+											{i18n.t("signup.buttons.login")}
+										</Link>
+									</Grid>
 								</Grid>
-							</Grid>
-						</Form>
-					)}
-				</Formik>
-			</div>
-			<Box mt={5}>
-				<Copyright />
-			</Box>
-		</Container>
+							</Form>
+						)}
+					</Formik>
+				</div>
+				<Box mt={5}>
+					<Copyright />
+				</Box>
+			</Container>
+		</div>
 	);
 };
 
