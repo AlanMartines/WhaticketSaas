@@ -72,9 +72,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	paper: {
 		marginTop: theme.spacing(8),
+		backgroundColor: theme.palette.login,
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
+		padding: "55px 30px",
+		borderRadius: "12.5px",
 	},
 	avatar: {
 		margin: theme.spacing(1),
