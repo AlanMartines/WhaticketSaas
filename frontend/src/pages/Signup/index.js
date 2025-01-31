@@ -143,7 +143,7 @@ const SignUp = () => {
 
 	return (
 		<div className={classes.root}>
-			<Container component="main" maxWidth="md">
+			<Container component="main" maxWidth="sm">
 				<CssBaseline />
 				<div className={classes.paper}>
 					<img className={classes.logo} src={logo} alt="Logo" />
