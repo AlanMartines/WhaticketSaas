@@ -20,7 +20,6 @@ if [ -d "$BACKEND_DIR" ]; then
     echo "Updating backend dependencies and building...";
     cd "$BACKEND_DIR";
     pwd;
-    rm -rf package-lock.json;
     rm -rf node_modules;
     rm -rf dist;
     npm cache clean --force;
@@ -42,7 +41,6 @@ if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building...";
     cd "$FRONTEND_DIR";
     pwd;
-    rm -rf package-lock.json;
     rm -rf node_modules;
     rm -rf build;
     npm cache clean --force;
