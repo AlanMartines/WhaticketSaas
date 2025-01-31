@@ -14,21 +14,29 @@ import { versionSystem } from "../../../package.json";
 import { i18n } from "../../translate/i18n";
 import { nomeEmpresa } from "../../../package.json";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import logo from "../../assets/logo.png";
 
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
+
+const copyright = process.env.REACT_APP_COPYRIGHT || "";
+const copyrightYear = process.env.REACT_APP_COPYRIGHT_YEAR || "0000";
+const copyrightUrl = process.env.REACT_APP_COPYRIGHT_URL || "";
 
 const Copyright = () => {
 	return (
-		<Typography variant="body2" color="primary" align="center">
-			{"Copyright "}
- 			<Link color="primary" href="#">
- 				{ nomeEmpresa } - v { versionSystem }
- 			</Link>{" "}
- 			{new Date().getFullYear()}
- 			{"."}
- 		</Typography>
- 	);
- };
+		<Typography variant="body2" color="textSecondary" align="center">
+			{"Copyright © "}
+			{copyrightYear}
+			{"-"}
+			{new Date().getFullYear()}
+			{" - "}
+			<Link color="inherit" href={copyrightUrl}>
+				{copyright}
+			</Link>
+			{"."}
+		</Typography>
+	);
+};
 
 const useStyles = makeStyles(theme => ({
 	root: {
