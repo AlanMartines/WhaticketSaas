@@ -21,10 +21,11 @@ if [ -d "$BACKEND_DIR" ]; then
     cd "$BACKEND_DIR";
     pwd;
     rm -rf package-lock.json;
-    npm cache clean --force;
     rm -rf node_modules;
-    npm install;
     rm -rf dist;
+    npm cache clean --force;
+    # npm install --legacy-peer-deps;
+    npm install;
     npm run build;
     npx sequelize db:migrate;
     npx sequelize db:seed;
@@ -42,10 +43,11 @@ if [ -d "$FRONTEND_DIR" ]; then
     cd "$FRONTEND_DIR";
     pwd;
     rm -rf package-lock.json;
-    npm cache clean --force;
     rm -rf node_modules;
-    npm install --legacy-peer-deps;
     rm -rf build;
+    npm cache clean --force;
+    # npm install --legacy-peer-deps;
+    npm install;
     npm run build;
     cd ..;
     pwd;
