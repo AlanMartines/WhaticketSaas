@@ -75,13 +75,15 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
+const UserSchema = Yup.object().shape({
+	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
+	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+});
+
 const Login = () => {
 	const classes = useStyles();
-
 	const [user, setUser] = useState({ email: "", password: "" });
-
 	const { handleLogin } = useContext(AuthContext);
-
 	const handleChangeInput = e => {
 		setUser({ ...user, [e.target.name]: e.target.value });
 	};
