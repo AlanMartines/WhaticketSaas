@@ -25,12 +25,34 @@ import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
 import InputMask from "react-input-mask";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import logo from "../../assets/logo.png";
 import { i18n } from "../../translate/i18n";
 import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import usePlans from "../../hooks/usePlans";
 import moment from "moment";
+
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
+
+const copyright = process.env.REACT_APP_COPYRIGHT || "";
+const copyrightYear = process.env.REACT_APP_COPYRIGHT_YEAR || "";
+const copyrightUrl = process.env.REACT_APP_COPYRIGHT_URL || "";
+
+const Copyright = () => {
+	return (
+		<Typography variant="body2" color="textSecondary" align="center">
+			{"Copyright © "}
+			{copyrightYear}
+			{"-"}
+			{new Date().getFullYear()}
+			{" - "}
+			<Link color="inherit" href={copyrightUrl}>
+				{copyright}
+			</Link>
+			{"."}
+		</Typography>
+	);
+};
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -56,17 +78,6 @@ const useStyles = makeStyles((theme) => ({
 		width: "100%",
 	},
 }));
-
-const Copyright = () => (
-	<Typography variant="body2" color="textSecondary" align="center">
-		{"Copyright © "}
-		<Link color="inherit" href="#">
-			Whaticket
-		</Link>{" "}
-		{new Date().getFullYear()}
-		{"."}
-	</Typography>
-);
 
 const UserSchema = Yup.object().shape({
 	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
