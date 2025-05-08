@@ -6,10 +6,10 @@
 🤖 TypeBot</br>
 💬 ChatGPT</br>
 
-#### Deploy Ubuntu 22.x
+#### Deploy Ubuntu/Debian (Recomendo Debian)
 
 ```bash
-sudo apt update && \
+apt update && \
 apt upgrade -y && \
 apt install -y \
 git \
@@ -74,31 +74,60 @@ sudo
 #### Instalar o pacote  build-essential:
 
 ```bash
-sudo apt-get install build-essential
+apt install build-essential
 ```
 
 ```bash
-sudo apt update && sudo apt upgrade -y
+apt update && apt upgrade -y
 ```
 
-#### Instale o node (20.x) e confirme se o comando do node -v e npm -v está disponível:
+#### Instale o node e confirme se o comando do node -v e npm -v está disponível:
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-sudo apt-get install -y nodejs
+curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+source ~/.profile
+nvm ls-remote
+nvm install v22.15.0
 node -v
 npm -v
 ```
 
+#### Trocar verção
+
+```bash
+nvm ls-remote
+nvm install v20.19.1
+node -v
+npm -v
+```
 
 #### Instale o docker e adicione seu usuário ao grupo do docker:
 
+##### Adicionar Docker's apt repository.
+
+```bash
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+```
+
+##### Instalar Docker packages
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
 
 sudo sh get-docker.sh
 
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 sudo usermod -aG docker ${USER}
 ```

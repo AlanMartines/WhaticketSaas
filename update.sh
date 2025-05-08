@@ -57,11 +57,17 @@ fi
 
 # Reiniciando serviços
 echo "Restarting services with PM2...";
-if pm2 restart all; then
-    echo "Services restarted successfully.";
+if pm2 restart WhaticketSaas-BACKEND; then
+    echo "Services BACKEND restarted successfully.";
 else
-    echo "Error restarting services. Please check your PM2 configuration.";
+    echo "Error restarting BACKEND services. Please check your PM2 configuration.";
     exit 1
 fi
 
+if pm2 restart WhaticketSaas-FRONTEND; then
+    echo "Services FRONTEND restarted successfully.";
+else
+    echo "Error restarting FRONTEND services. Please check your PM2 configuration.";
+    exit 1
+fi
 echo "Whaticket update process completed successfully.!";
