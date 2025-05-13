@@ -1,13 +1,50 @@
 import * as Sentry from "@sentry/node";
 import makeWASocket, {
-  WASocket,
   Browsers,
-  DisconnectReason,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
-  makeInMemoryStore,
-  isJidBroadcast,
-  CacheStore
+  CacheStore,
+	useSingleFileAuthState,
+	DisconnectReason,
+	AnyMessageContent,
+	delay,
+	makeInMemoryStore,
+	MessageType,
+	MessageOptions,
+	Mimetype,
+	isJidGroup,
+	loadMessages,
+	fetchLatestBaileysVersion,
+	WASocket,
+	AuthenticationState,
+	BufferJSON,
+	getMessage,
+	WA_DEFAULT_EPHEMERAL,
+	initInMemoryKeyStore,
+	WAMessage,
+	Contact,
+	SocketConfig,
+	BaileysEventMap,
+	GroupMetadata,
+	MiscMessageGenerationOptions,
+	generateWAMessageFromContent,
+	downloadContentFromMessage,
+	downloadHistory,
+	proto,
+	generateWAMessageContent,
+	prepareWAMessageMedia,
+	WAUrlInfo,
+	useMultiFileAuthState,
+	makeCacheableSignalKeyStore,
+	isJidBroadcast,
+	MessageRetryMap,
+	getAggregateVotesInPollMessage,
+	WAMessageContent,
+	WAMessageKey,
+	PHONENUMBER_MCC,
+	BinaryInfo,
+	downloadAndProcessHistorySyncNotification,
+	encodeWAM,
+	getHistoryMsg,
+	isJidNewsletter,
 } from "@whiskeysockets/baileys";
 import makeWALegacySocket from "@whiskeysockets/baileys";
 import P from "pino";
@@ -20,6 +57,7 @@ import { Boom } from "@hapi/boom";
 import AppError from "../errors/AppError";
 import { getIO } from "./socket";
 import { Store } from "./store";
+import { release } from "os";
 import { StartWhatsAppSession } from "../services/WbotServices/StartWhatsAppSession";
 import DeleteBaileysService from "../services/BaileysServices/DeleteBaileysService";
 import NodeCache from 'node-cache';
@@ -81,6 +119,11 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
         const { version, isLatest } = await fetchLatestBaileysVersion();
         const isLegacy = provider === "stable" ? true : false;
 
+        const useStore = !process.argv.includes('--no-store');
+        const doReplies = process.argv.includes('--do-reply');
+        const usePairingCode = process.argv.includes('--use-pairing-code');
+        const useMobile = process.argv.includes('--mobile');
+
         logger.info(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
         logger.info(`isLegacy: ${isLegacy}`);
         logger.info(`Starting session ${name}`);
@@ -96,21 +139,142 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
         const msgRetryCounterCache = new NodeCache();
         const userDevicesCache: CacheStore = new NodeCache();
 
+        const BROWSER_CLIENT = process.env.BROWSER_CLIENT ? process.env.BROWSER_CLIENT : 'EletroInfo';
+        const BROWSER_NAME = process.env.BROWSER_NAME ? process.env.BROWSER_NAME : 'Chrome';
+
+				const SocketConfig = {
+					/** URL do WS para conectar ao WhatsApp */
+					//waWebSocketUrl: config.WA_URL,
+					/** Falha a conexão se o socket expirar neste intervalo */
+					connectTimeoutMs: 60000,
+					/** Tempo limite padrão para consultas, undefined para nenhum tempo limite */
+					defaultQueryTimeoutMs: undefined,
+					/** Intervalo de ping-pong para conexão WS */
+					keepAliveIntervalMs: 5000,
+					/** Agente de proxy */
+					agent: undefined,
+					/** Logger do tipo pino */
+					logger: loggerBaileys,
+					/** Versão para conectar */
+					version: version,
+					/** Configuração do navegador */
+					browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
+					/** Agente usado para solicitações de busca - carregamento/download de mídia */
+					fetchAgent: undefined,
+					/** Deve o QR ser impresso no terminal */
+					printQRInTerminal: false,
+					//
+					mobile: useMobile,
+					/** Deve eventos serem emitidos para ações realizadas por esta conexão de soquete */
+					emitOwnEvents: true,
+					/** Fornece um cache para armazenar mídia, para que não precise ser reenviada */
+					//mediaCache: NodeCache,
+					/** Hospedeiros personalizados de upload de mídia */
+					//customUploadHosts: MediaConnInfo['hosts'],
+					/** Tempo de espera entre o envio de novas solicitações de repetição */
+					retryRequestDelayMs: 5000,
+					/** Tempo de espera para a geração do próximo QR em ms */
+					qrTimeout: 15000,
+					/** Forneça um objeto de estado de autenticação para manter o estado de autenticação */
+					//auth: state,
+					auth: {
+						creds: state.creds,
+						// O armazenamento em cache torna o armazenamento mais rápido para enviar/receber mensagens
+						keys: makeCacheableSignalKeyStore(state.keys, logger),
+					},
+					/** Gerencia o processamento do histórico com este controle; por padrão, sincronizará tudo */
+					//shouldSyncHistoryMessage: boolean,
+					/** Opções de capacidade de transação para SignalKeyStore */
+					//transactionOpts: TransactionCapabilityOptions,
+					/** Fornece um cache para armazenar a lista de dispositivos do usuário */
+					//userDevicesCache: NodeCache,
+					/** Marca o cliente como online sempre que o soquete se conecta com sucesso */
+					//markOnlineOnConnect: true,
+					/**
+					 * Mapa para armazenar as contagens de repetição para mensagens com falha;
+					 * usado para determinar se uma mensagem deve ser retransmitida ou não */
+					msgRetryCounterCache: msgRetryCounterCache,
+					/** Largura para imagens de visualização de link */
+					linkPreviewImageThumbnailWidth: 192,
+					/** O Baileys deve solicitar ao telefone o histórico completo, que será recebido assincronamente */
+					syncFullHistory: true,
+					/** O Baileys deve disparar consultas de inicialização automaticamente, padrão: true */
+					fireInitQueries: true,
+					/**
+					 * Gerar uma visualização de link de alta qualidade,
+					 * implica fazer upload do jpegThumbnail para o WhatsApp
+					 */
+					generateHighQualityLinkPreview: true,
+					/** Opções para o axios */
+					//options: AxiosRequestConfig || undefined,
+					// Ignorar todas as mensagens de transmissão -- para receber as mesmas
+					// comente a linha abaixo
+					shouldIgnoreJid: jid => isJidBroadcast(jid),
+					/** Por padrão, verdadeiro, as mensagens de histórico devem ser baixadas e processadas */
+					downloadHistory: true,
+					/**
+					 * Busque uma mensagem em sua loja
+					 * implemente isso para que mensagens com falha no envio (resolve o problema "esta mensagem pode levar um tempo" possam ser reenviadas
+					 */
+					// implemente para lidar com repetições
+					getMessage,
+					// Para o botão de correção, mensagem de lista de modelos
+					patchMessageBeforeSending,
+				};
+				//
         wsocket = makeWASocket({
-          logger: loggerBaileys,
-          printQRInTerminal: false,
-          browser: Browsers.appropriate("Desktop"),
-          auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, logger),
-          },
-          version,
-          // defaultQueryTimeoutMs: 60000,
-          // retryRequestDelayMs: 250,
-          // keepAliveIntervalMs: 1000 * 60 * 10 * 3,
-          msgRetryCounterCache,
-          shouldIgnoreJid: jid => isJidBroadcast(jid),
+					//
+					SocketConfig
+					//
         });
+
+				async function getMessage(key) {
+					if (store) {
+						const msg = await store.loadMessage(key.remoteJid, key.id);
+						return msg?.message || undefined;
+					}
+					// only if store is present
+					return proto.Message.fromObject({});
+				}
+				//
+				function patchMessageBeforeSending(message) {
+					const requiresPatch = !!(
+						message.buttonsMessage ||
+						message.templateMessage ||
+						message.listMessage
+					);
+					if (requiresPatch) {
+						message = {
+							viewOnceMessage: {
+								message: {
+									messageContextInfo: {
+										deviceListMetadataVersion: 2,
+										deviceListMetadata: {}
+									},
+									...message
+								}
+							}
+						};
+					}
+					return message;
+				}
+
+        // wsocket = makeWASocket({
+        //   logger: loggerBaileys,
+        //   printQRInTerminal: false,
+        //   //browser: Browsers.appropriate("Desktop"),
+        //   browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
+        //   auth: {
+        //     creds: state.creds,
+        //     keys: makeCacheableSignalKeyStore(state.keys, logger),
+        //   },
+        //   version,
+        //   // defaultQueryTimeoutMs: 60000,
+        //   // retryRequestDelayMs: 250,
+        //   // keepAliveIntervalMs: 1000 * 60 * 10 * 3,
+        //   msgRetryCounterCache,
+        //   shouldIgnoreJid: jid => isJidBroadcast(jid),
+        // });
 
         // wsocket = makeWASocket({
         //   version,
