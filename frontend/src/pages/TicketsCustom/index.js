@@ -10,7 +10,7 @@ import Ticket from "../../components/Ticket/";
 import logoDefault from "../../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
 
-import { i18n } from "../../translate/i18n";
+// import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
 	chatContainer: {
