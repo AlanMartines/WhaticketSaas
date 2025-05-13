@@ -32,9 +32,7 @@ import { i18n } from "../translate/i18n";
 import toastError from "../errors/toastError";
 import AnnouncementsPopover from "../components/AnnouncementsPopover";
 
-import logoDefault from "../assets/logo.png";
-const logo = process.env.REACT_APP_LOGO || logoDefault;
-
+import logo from "../assets/logo.png";
 import { SocketContext } from "../context/Socket/SocketContext";
 import ChatPopover from "../pages/Chat/ChatPopover";
 
@@ -395,7 +393,7 @@ const LoggedInLayout = ({ children, themeToggle }) => {
               </>
             ) : (
               <>
-                Olá  <b>{user.name}</b>, Bem vindo a <b>{user?.company?.name}</b>!
+                Olá <b>{user.name}</b>, Bem vindo a <b>{user?.company?.name}</b>!
               </>
             )}
           </Typography>
