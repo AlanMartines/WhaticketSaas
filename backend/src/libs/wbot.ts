@@ -177,11 +177,11 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					qrTimeout: 15000,
 					/** Forneça um objeto de estado de autenticação para manter o estado de autenticação */
 					//auth: state,
-					auth: {
-						creds: state.creds,
-						// O armazenamento em cache torna o armazenamento mais rápido para enviar/receber mensagens
-						keys: makeCacheableSignalKeyStore(state.keys, logger),
-					},
+          auth: {
+            creds: state.creds,
+            //O armazenamento em cache torna o armazenamento mais rápido para enviar/receber mensagens
+            keys: makeCacheableSignalKeyStore(state.keys, logger),
+          },
 					/** Gerencia o processamento do histórico com este controle; por padrão, sincronizará tudo */
 					//shouldSyncHistoryMessage: boolean,
 					/** Opções de capacidade de transação para SignalKeyStore */
