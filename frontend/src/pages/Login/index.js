@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 	root: {
 		width: "100vw",
 		height: "100vh",
-		backgroundImage: "url(https://i.imgur.com/gB0s3Zf.jpeg)",
+		backgroundImage: "url('../../assets/background.jpeg')",
 		backgroundRepeat: "no-repeat",
 		backgroundSize: "100% 100%",
 		backgroundPosition: "center",
