@@ -23,6 +23,7 @@
     "chartjs-plugin-datalabels": "^2.1.0",
     "context": "^4.0.0",
     "date-fns": "^2.16.1",
+    "dotenv": "^16.5.0",
     "emoji-mart": "^3.0.0",
     "formik": "^2.2.0",
     "formik-material-ui": "^3.0.1",
