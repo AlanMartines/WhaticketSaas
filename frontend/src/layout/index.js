@@ -32,7 +32,7 @@ import { i18n } from "../translate/i18n";
 import toastError from "../errors/toastError";
 import AnnouncementsPopover from "../components/AnnouncementsPopover";
 
-import logoDefault from "../../assets/logo.png";
+import logoDefault from "../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 import { SocketContext } from "../context/Socket/SocketContext";

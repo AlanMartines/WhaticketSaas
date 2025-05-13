@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import TicketsManager from "../../components/TicketsManager/";
 import Ticket from "../../components/Ticket/";
 
-import logoDefault from "../../assets/logo.png";
+import logoDefault from "../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 import { i18n } from "../../translate/i18n";

@@ -21,7 +21,7 @@ import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import moment from "moment";
 
-import logoDefault from "../../assets/logo.png";
+import logoDefault from "../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 import { toast } from 'react-toastify'; 
