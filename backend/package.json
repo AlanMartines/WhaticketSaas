@@ -1,6 +1,8 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "versionSystem": "1.0.0",
+  "nomeEmpresa": "EletroInfo",
   "description": "",
   "main": "index.js",
   "scripts": {
