@@ -6,7 +6,10 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import TicketsManager from "../../components/TicketsManagerTabs/";
 import Ticket from "../../components/Ticket/";
-import logo from "../../assets/logo.png"; //PLW DESIGN LOGO//
+
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
+
 import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
