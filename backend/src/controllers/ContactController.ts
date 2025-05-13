@@ -10,6 +10,7 @@ import DeleteContactService from "../services/ContactServices/DeleteContactServi
 import GetContactService from "../services/ContactServices/GetContactService";
 
 import CheckContactNumber from "../services/WbotServices/CheckNumber";
+import checkGroup from "../services/WbotServices/CheckGroup";
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
@@ -89,9 +90,15 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   }
 
   await CheckIsValidContact(newContact.number, companyId);
-  const validNumber = await CheckContactNumber(newContact.number, companyId);
-  const number = validNumber.jid.replace(/\D/g, "");
-  newContact.number = number;
+  // const validNumber = await CheckContactNumber(newContact.number, companyId);
+  // const number = validNumber.jid.replace(/\D/g, "");
+  // newContact.number = number;
+	const validGroup = await checkGroup(newContact.number);
+	if(!validGroup){
+		const validNumber = await CheckContactNumber(newContact.number, companyId);
+		const number = validNumber.jid.replace(/\D/g, "");
+		newContact.number = number;
+	}
 
   /**
    * Código desabilitado por demora no retorno
@@ -144,9 +151,15 @@ export const update = async (
   }
 
   await CheckIsValidContact(contactData.number, companyId);
-  const validNumber = await CheckContactNumber(contactData.number, companyId);
-  const number = validNumber.jid.replace(/\D/g, "");
-  contactData.number = number;
+  // const validNumber = await CheckContactNumber(contactData.number, companyId);
+  // const number = validNumber.jid.replace(/\D/g, "");
+  // contactData.number = number;
+	const validGroup = await checkGroup(contactData.number);
+	if(!validGroup){
+		const validNumber = await CheckContactNumber(contactData.number, companyId);
+		const number = validNumber.jid.replace(/\D/g, "");
+		contactData.number = number;
+	}
 
   const { contactId } = req.params;
 
