@@ -20,6 +20,7 @@ if [ -d "$BACKEND_DIR" ]; then
     echo "Updating backend dependencies and building...";
     cd "$BACKEND_DIR";
     pwd;
+    rm -rf package-lock.json;
     rm -rf node_modules;
     rm -rf dist;
     npm cache clean --force;
@@ -41,11 +42,12 @@ if [ -d "$FRONTEND_DIR" ]; then
     echo "Updating frontend dependencies and building...";
     cd "$FRONTEND_DIR";
     pwd;
+    rm -rf package-lock.json;
     rm -rf node_modules;
     rm -rf build;
     npm cache clean --force;
-    # npm install --legacy-peer-deps;
-    npm install;
+    npm install --legacy-peer-deps;
+    # npm install;
     npm run build;
     cd ..;
     pwd;
@@ -57,17 +59,17 @@ fi
 
 # Reiniciando serviços
 echo "Restarting services with PM2...";
-if pm2 restart WhaticketSaas-BACKEND; then
-    echo "Services BACKEND restarted successfully.";
+if pm2 restart WhaticketSaas-backend; then
+    echo "Services restarted successfully.";
 else
-    echo "Error restarting BACKEND services. Please check your PM2 configuration.";
+    echo "Error restarting services. Please check your PM2 configuration.";
     exit 1
 fi
 
-if pm2 restart WhaticketSaas-FRONTEND; then
-    echo "Services FRONTEND restarted successfully.";
+if pm2 restart WhaticketSaas-frontend; then
+    echo "Services restarted successfully.";
 else
-    echo "Error restarting FRONTEND services. Please check your PM2 configuration.";
+    echo "Error restarting services. Please check your PM2 configuration.";
     exit 1
 fi
 echo "Whaticket update process completed successfully.!";
