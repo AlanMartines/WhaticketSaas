@@ -12,7 +12,7 @@ import TicketsManagerTabs from "../../components/TicketsManagerTabs/";
 import Ticket from "../../components/Ticket/";
 import TicketAdvancedLayout from "../../components/TicketAdvancedLayout";
 
-import logoDefault from "../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 import { TicketsContext } from "../../context/Tickets/TicketsContext";
