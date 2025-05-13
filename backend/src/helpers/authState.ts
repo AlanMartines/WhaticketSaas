@@ -33,10 +33,25 @@ const authState = async (
 
   // const getSessionDatabase = await whatsappById(whatsapp.id);
 
+  // if (whatsapp.session && whatsapp.session !== null) {
+  //   const result = JSON.parse(whatsapp.session, BufferJSON.reviver);
+  //   creds = result.creds;
+  //   keys = result.keys;
+  // } else {
+  //   creds = initAuthCreds();
+  //   keys = {};
+  // }
+
   if (whatsapp.session && whatsapp.session !== null) {
-    const result = JSON.parse(whatsapp.session, BufferJSON.reviver);
-    creds = result.creds;
-    keys = result.keys;
+    try {
+      const result = JSON.parse(whatsapp.session, BufferJSON.reviver);
+      creds = result.creds ?? initAuthCreds();
+      keys = result.keys ?? {};
+    } catch (e) {
+      console.error("Erro ao carregar sessão WhatsApp:", e);
+      creds = initAuthCreds();
+      keys = {};
+    }
   } else {
     creds = initAuthCreds();
     keys = {};

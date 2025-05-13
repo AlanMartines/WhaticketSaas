@@ -136,6 +136,10 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 
         const { state, saveState } = await authState(whatsapp);
 
+        if (!state?.creds || !state?.keys) {
+          throw new Error(`Falha ao carregar estado de autenticação para o WhatsApp ID ${whatsapp.id}`);
+        }
+
         const msgRetryCounterCache = new NodeCache();
         const userDevicesCache: CacheStore = new NodeCache();
 
