@@ -17,7 +17,7 @@ const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 import { TicketsContext } from "../../context/Tickets/TicketsContext";
 
-import { i18n } from "../../translate/i18n";
+// import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
     header: {
