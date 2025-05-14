@@ -1,17 +1,43 @@
 import * as Sentry from "@sentry/node";
 import makeWASocket, {
-  WASocket,
   Browsers,
-  WAMessage,
+  CacheStore,
   DisconnectReason,
-  fetchLatestBaileysVersion,
-  makeCacheableSignalKeyStore,
+  AnyMessageContent,
+  delay,
   makeInMemoryStore,
+  MessageType,
+  isJidGroup,
+  fetchLatestBaileysVersion,
+  WASocket,
+  AuthenticationState,
+  BufferJSON,
+  WA_DEFAULT_EPHEMERAL,
+  WAMessage,
+  SocketConfig,
+  BaileysEventMap,
+  GroupMetadata,
+  MiscMessageGenerationOptions,
+  generateWAMessageFromContent,
+  downloadContentFromMessage,
+  downloadHistory,
+  proto,
+  generateWAMessageContent,
+  prepareWAMessageMedia,
+  WAUrlInfo,
+  useMultiFileAuthState,
+  makeCacheableSignalKeyStore,
   isJidBroadcast,
+  getAggregateVotesInPollMessage,
+  WAMessageContent,
   WAMessageKey,
-  jidNormalizedUser,
-  CacheStore
+  BinaryInfo,
+  downloadAndProcessHistorySyncNotification,
+  encodeWAM,
+  getHistoryMsg,
+  isJidNewsletter,
 } from "@whiskeysockets/baileys";
+import { release } from "os";
 import { Op } from "sequelize";
 import { FindOptions } from "sequelize/types";
 import Whatsapp from "../models/Whatsapp";
@@ -154,6 +180,11 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
         const { version, isLatest } = await fetchLatestBaileysVersion();
         const isLegacy = provider === "stable" ? true : false;
 
+        const useStore = !process.argv.includes('--no-store');
+        const doReplies = process.argv.includes('--do-reply');
+        const usePairingCode = process.argv.includes('--use-pairing-code');
+        const useMobile = process.argv.includes('--mobile');
+
         logger.info(`using WA v${version.join(".")}, isLatest: ${isLatest}`);
         logger.info(`isLegacy: ${isLegacy}`);
         logger.info(`Starting session ${name}`);
@@ -166,61 +197,143 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 
         const { state, saveState } = await authState(whatsapp);
 
-        //const msgRetryCounterCache = new NodeCache();
+        const msgRetryCounterCache = new NodeCache();
         const userDevicesCache: CacheStore = new NodeCache();
 
+        const BROWSER_CLIENT = process.env.BROWSER_CLIENT ? process.env.BROWSER_CLIENT : 'EletroInfo';
+        const BROWSER_NAME = process.env.BROWSER_NAME ? process.env.BROWSER_NAME : 'Chrome';
+
         wsocket = makeWASocket({
+          /** URL do WS para conectar ao WhatsApp */
+          //waWebSocketUrl: config.WA_URL,
+          /** Falha a conexão se o socket expirar neste intervalo */
+          connectTimeoutMs: 25_000,
+          /** Tempo limite padrão para consultas, undefined para nenhum tempo limite */
+          defaultQueryTimeoutMs: undefined,
+          /** Intervalo de ping-pong para conexão WS */
+          keepAliveIntervalMs: 5000,
+          /** Agente de proxy */
+          agent: undefined,
+          /** Logger do tipo pino */
           logger: loggerBaileys,
+          /** Versão para conectar */
+          version: version,
+          /** Configuração do navegador */
+          browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
+          /** Agente usado para solicitações de busca - carregamento/download de mídia */
+          fetchAgent: undefined,
+          /** Deve o QR ser impresso no terminal */
           printQRInTerminal: false,
+          //
+          mobile: useMobile,
+          /** Deve eventos serem emitidos para ações realizadas por esta conexão de soquete */
+          emitOwnEvents: true,
+          /** Fornece um cache para armazenar mídia, para que não precise ser reenviada */
+          //mediaCache: NodeCache,
+          /** Hospedeiros personalizados de upload de mídia */
+          //customUploadHosts: MediaConnInfo['hosts'],
+          /** Tempo de espera entre o envio de novas solicitações de repetição */
+          retryRequestDelayMs: 500,
+          /** Tempo de espera para a geração do próximo QR em ms */
+          qrTimeout: 15000,
+          /** Forneça um objeto de estado de autenticação para manter o estado de autenticação */
+          //auth: state,
           auth: {
             creds: state.creds,
+            //O armazenamento em cache torna o armazenamento mais rápido para enviar/receber mensagens
             keys: makeCacheableSignalKeyStore(state.keys, logger),
           },
-          version,
-		  browser: Browsers.appropriate("Desktop"),
-          defaultQueryTimeoutMs: undefined,
-          msgRetryCounterCache,
-		  markOnlineOnConnect: false,
-		  connectTimeoutMs: 25_000,
-		  retryRequestDelayMs: 500,
-		  getMessage: msgDB.get,
-		  emitOwnEvents: true,
+          /** Gerencia o processamento do histórico com este controle; por padrão, sincronizará tudo */
+          //shouldSyncHistoryMessage: boolean,
+          /** Opções de capacidade de transação para SignalKeyStore */
+          transactionOpts: { maxCommitRetries: 10, delayBetweenTriesMs: 3000 },
+          /** Fornece um cache para armazenar a lista de dispositivos do usuário */
+          //userDevicesCache: NodeCache,
+          /** Marca o cliente como online sempre que o soquete se conecta com sucesso */
+          markOnlineOnConnect: false,
+          /**
+           * Mapa para armazenar as contagens de repetição para mensagens com falha;
+           * usado para determinar se uma mensagem deve ser retransmitida ou não */
+          msgRetryCounterCache: msgRetryCounterCache,
+          /** Largura para imagens de visualização de link */
+          linkPreviewImageThumbnailWidth: 192,
+          /** O Baileys deve solicitar ao telefone o histórico completo, que será recebido assincronamente */
+          syncFullHistory: true,
+          /** O Baileys deve disparar consultas de inicialização automaticamente, padrão: true */
           fireInitQueries: true,
-		  transactionOpts: { maxCommitRetries: 10, delayBetweenTriesMs: 3000 },
+          /**
+           * Gerar uma visualização de link de alta qualidade,
+           * implica fazer upload do jpegThumbnail para o WhatsApp
+           */
+          generateHighQualityLinkPreview: true,
+          /** Opções para o axios */
+          //options: AxiosRequestConfig || undefined,
+          // Ignorar todas as mensagens de transmissão -- para receber as mesmas
+          // comente a linha abaixo
           shouldIgnoreJid: jid => isJidBroadcast(jid),
+          /** Por padrão, verdadeiro, as mensagens de histórico devem ser baixadas e processadas */
+          //downloadHistory: true,
+          /**
+           * Busque uma mensagem em sua loja
+           * implemente isso para que mensagens com falha no envio (resolve o problema "esta mensagem pode levar um tempo" possam ser reenviadas
+           */
+          // implemente para lidar com repetições
+          getMessage: msgDB.get,
+          // Para o botão de correção, mensagem de lista de modelos
+          patchMessageBeforeSending,
         });
 
+        async function getMessage(key) {
+          if (store) {
+            const msg = await store.loadMessage(key.remoteJid, key.id);
+            return msg?.message || undefined;
+          }
+          // only if store is present
+          return proto.Message.fromObject({});
+        }
+        //
+        function patchMessageBeforeSending(message) {
+          const requiresPatch = !!(
+            message.buttonsMessage ||
+            message.templateMessage ||
+            message.listMessage
+          );
+          if (requiresPatch) {
+            message = {
+              viewOnceMessage: {
+                message: {
+                  messageContextInfo: {
+                    deviceListMetadataVersion: 2,
+                    deviceListMetadata: {}
+                  },
+                  ...message
+                }
+              }
+            };
+          }
+          return message;
+        }
+
         // wsocket = makeWASocket({
-        //   version,
         //   logger: loggerBaileys,
         //   printQRInTerminal: false,
-        //   auth: state as AuthenticationState,
-        //   generateHighQualityLinkPreview: false,
-        //   shouldIgnoreJid: jid => isJidBroadcast(jid),
-        //   browser: ["Chat", "Chrome", "10.15.7"],
-        //   patchMessageBeforeSending: (message) => {
-        //     const requiresPatch = !!(
-        //       message.buttonsMessage ||
-        //       // || message.templateMessage
-        //       message.listMessage
-        //     );
-        //     if (requiresPatch) {
-        //       message = {
-        //         viewOnceMessage: {
-        //           message: {
-        //             messageContextInfo: {
-        //               deviceListMetadataVersion: 2,
-        //               deviceListMetadata: {},
-        //             },
-        //             ...message,
-        //           },
-        //         },
-        //       };
-        //     }
-
-        //     return message;
+        //   auth: {
+        //     creds: state.creds,
+        //     keys: makeCacheableSignalKeyStore(state.keys, logger),
         //   },
-        // })
+        //   version,
+        //   browser: Browsers.appropriate("Desktop"),
+        //   defaultQueryTimeoutMs: undefined,
+        //   msgRetryCounterCache,
+        //   markOnlineOnConnect: false,
+        //   connectTimeoutMs: 25_000,
+        //   retryRequestDelayMs: 500,
+        //   getMessage: msgDB.get,
+        //   emitOwnEvents: true,
+        //   fireInitQueries: true,
+        //   transactionOpts: { maxCommitRetries: 10, delayBetweenTriesMs: 3000 },
+        //   shouldIgnoreJid: jid => isJidBroadcast(jid),
+        // });
 
         wsocket.ev.on(
           "connection.update",
@@ -269,10 +382,10 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
                     : "-"
               });
 
-                io.emit(`company-${whatsapp.companyId}-whatsappSession`, {
-                  action: "update",
-                  session: whatsapp
-                });
+              io.emit(`company-${whatsapp.companyId}-whatsappSession`, {
+                action: "update",
+                session: whatsapp
+              });
 
               const sessionIndex = sessions.findIndex(
                 s => s.id === whatsapp.id
