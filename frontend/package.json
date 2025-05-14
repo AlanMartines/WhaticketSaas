@@ -40,6 +40,7 @@
     "markdown-to-jsx": "^7.7.4",
     "material-ui-color": "^1.2.0",
     "material-ui-nested-menu-item": "^1.0.2",
+    "material-ui-popup-state": "^5.3.6",
     "mic-recorder-to-mp3": "^2.2.2",
     "moment": "^2.29.1",
     "path-browserify": "^1.0.1",
