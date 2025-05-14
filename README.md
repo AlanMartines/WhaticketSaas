@@ -103,8 +103,9 @@ git clone https://github.com/AlanMartines/WhaticketSaas.git
 #### Crie um arquivo .env de backend e preencha com as informações correta:
 
 ```bash
-cp WhaticketSaas/backend/.env.example WhaticketSaas/backend/.env
-vim WhaticketSaas/backend/.env
+cd WhaticketSaas/backend/
+cp .env.example .env
+vim .env
 ```
 
 ```bash
