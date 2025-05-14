@@ -266,9 +266,9 @@ npm run build
 sudo npm install -g pm2
 
 cd ../backend
-pm2 start dist/server.js --name unkbot-backend
+pm2 start dist/server.js --name WhaticketSaas-backend
 cd ../frontend
-pm2 start server.js --name unkbot-frontend
+pm2 start server.js --name WhaticketSaas-frontend
 
 ```
 

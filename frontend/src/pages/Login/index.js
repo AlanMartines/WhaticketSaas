@@ -18,6 +18,7 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 //import logo from "../../assets/logo.png";
 import logoDefault from "../../assets/logo.png";
 const logo = process.env.REACT_APP_LOGO || logoDefault;
+import backgroundImage from "../../assets/background.jpeg";
 
 const Copyright = () => {
 	return (
@@ -37,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 		width: "100vw",
 		height: "100vh",
 		//background: "linear-gradient(to right, #76EE00 , #76EE00 , #458B00)",
-		backgroundImage: "url(../../assets/background.jpeg)",
+		backgroundImage: `url(${background})`,
 		backgroundRepeat: "no-repeat",
 		backgroundSize: "100% 100%",
 		backgroundPosition: "center",
