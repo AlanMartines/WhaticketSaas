@@ -142,7 +142,7 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
         const BROWSER_CLIENT = process.env.BROWSER_CLIENT ? process.env.BROWSER_CLIENT : 'EletroInfo';
         const BROWSER_NAME = process.env.BROWSER_NAME ? process.env.BROWSER_NAME : 'Chrome';
 
-				const SocketConfig = {
+				wsocket = makeWASocket({
 					/** URL do WS para conectar ao WhatsApp */
 					//waWebSocketUrl: config.WA_URL,
 					/** Falha a conexão se o socket expirar neste intervalo */
@@ -158,7 +158,8 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					/** Versão para conectar */
 					version: version,
 					/** Configuração do navegador */
-					browser: [String(BROWSER_CLIENT), String(BROWSER_NAME), String(release())],
+					//browser: [String(BROWSER_CLIENT), String(BROWSER_NAME), String(release())],
+					browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
 					/** Agente usado para solicitações de busca - carregamento/download de mídia */
 					fetchAgent: undefined,
 					/** Deve o QR ser impresso no terminal */
@@ -220,10 +221,6 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					getMessage,
 					// Para o botão de correção, mensagem de lista de modelos
 					patchMessageBeforeSending,
-				};
-				//
-				wsocket = makeWASocket({
-					...SocketConfig
 				});
 
 				async function getMessage(key) {
