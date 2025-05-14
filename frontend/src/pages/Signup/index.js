@@ -12,6 +12,7 @@ import api from "../../services/api";
 import {
 	FormControl,
 	Avatar,
+	useTheme,
 	Button,
 	CssBaseline,
 	TextField,
@@ -26,8 +27,6 @@ import {
 	makeStyles,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";  // Added useTheme
 import Container from "@material-ui/core/Container";
 import { i18n } from "../../translate/i18n";
 
