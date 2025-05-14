@@ -27,7 +27,6 @@ import {
 	makeStyles,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Container from "@material-ui/core/Container";
 import { i18n } from "../../translate/i18n";
 
 import { openApi } from "../../services/api";
