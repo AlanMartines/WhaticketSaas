@@ -185,7 +185,7 @@ module.exports = {
         )
       ]);
     });
-  },  
+  },
 
   down: async (queryInterface: QueryInterface) => {
     return Promise.all([
