@@ -184,7 +184,7 @@ module.exports = {
           "Companies",
           [
             {
-              name: "Empresa 1",
+              name: "Super Admin",
               planId: 10,
               dueDate: "3000-01-01 04:00:00+01",
               createdAt: new Date(),
