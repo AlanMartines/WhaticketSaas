@@ -45,8 +45,8 @@ import makeWASocket, {
 	encodeWAM,
 	getHistoryMsg,
 	isJidNewsletter,
+	makeWALegacySocket
 } from "@whiskeysockets/baileys";
-import makeWALegacySocket from "@whiskeysockets/baileys";
 import P from "pino";
 
 import Whatsapp from "../models/Whatsapp";
