@@ -18,9 +18,19 @@ import InputMask from 'react-input-mask';
 import api from "../../services/api";
 import {
 	FormControl,
-	InputLabel,
+	Avatar,
+	Button,
+	CssBaseline,
+	TextField,
+	Link,
+	Grid,
+	Box,
+	Container,
+	Typography,
 	MenuItem,
+	InputLabel,
 	Select,
+	makeStyles,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
@@ -31,6 +41,10 @@ import { i18n } from "../../translate/i18n";
 import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import moment from "moment";
+
+//import logo from "../../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const Copyright = () => (
 	<Typography variant="body2" color="textSecondary" align="center">
@@ -43,7 +57,7 @@ const Copyright = () => (
 	</Typography>
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
 	paper: {
 		marginTop: theme.spacing(8),
 		display: "flex",
@@ -61,12 +75,17 @@ const useStyles = makeStyles(theme => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
+	logo: {
+		margin: "0 auto",
+		height: "80px",
+		width: "100%",
+	},
 }));
 
 const UserSchema = Yup.object().shape({
 	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
-	//phone: Yup.string().required("Obrigatório"),
+	phone: Yup.string().required("Obrigatório"),
 	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 });
 
@@ -246,21 +265,49 @@ const SignUp = () => {
 									<InputLabel htmlFor="plan-selection">Plano</InputLabel>
 									<Field
 										as={Select}
+										name="planId"
 										variant="outlined"
 										fullWidth
 										id="plan-selection"
-										label="Plano"
-										name="planId"
-										required
 									>
-										<MenuItem value="disabled" disabled>
-											<em>Selecione seu plano de assinatura</em>
-										</MenuItem>
-										{plans.map((plan, key) => (
-											<MenuItem key={key} value={plan.id}>
-												{plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-											</MenuItem>
-										))}
+										{plans
+											.sort((a, b) => {
+												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
+												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
+
+												if (numA !== numB) {
+													return numA - numB;
+												}
+
+												return a.name.localeCompare(b.name);
+											})
+											.map((plan) => (
+												<MenuItem key={plan.id} value={plan.id}>
+													<div style={{ display: "flex", flexDirection: "column" }}>
+														<Typography variant="body1" style={{ fontWeight: "bold" }}>
+															{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+														</Typography>
+														<Tooltip
+															title={
+																<div>
+																	<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
+																	<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
+																	<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
+																	<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
+																	<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
+																	<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
+																	<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
+																</div>
+															}
+															arrow
+														>
+															<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
+																Passe o mouse para ver os recursos
+															</Typography>
+														</Tooltip>
+													</div>
+												</MenuItem>
+											))}
 									</Field>
 								</Grid>
 							</Grid>
