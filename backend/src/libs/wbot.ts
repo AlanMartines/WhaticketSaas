@@ -222,6 +222,22 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 				// 	patchMessageBeforeSending,
 				// });
 
+        wsocket = makeWASocket({
+          logger: loggerBaileys,
+          printQRInTerminal: false,
+          //browser: Browsers.appropriate("Desktop"),
+          browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
+          auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, logger),
+          },
+          version,
+          msgRetryCounterCache,
+          shouldIgnoreJid: jid => isJidBroadcast(jid),
+ 					getMessage,
+					patchMessageBeforeSending,
+        });
+
 				async function getMessage(key) {
 					if (store) {
 						const msg = await store.loadMessage(key.remoteJid, key.id);
@@ -252,22 +268,6 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					}
 					return message;
 				}
-
-        wsocket = makeWASocket({
-          logger: loggerBaileys,
-          printQRInTerminal: false,
-          //browser: Browsers.appropriate("Desktop"),
-          browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
-          auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, logger),
-          },
-          version,
-          msgRetryCounterCache,
-          shouldIgnoreJid: jid => isJidBroadcast(jid),
- 					getMessage,
-					patchMessageBeforeSending,
-        });
 
         wsocket.ev.on(
           "connection.update",
