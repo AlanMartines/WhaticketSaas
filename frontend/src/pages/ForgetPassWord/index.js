@@ -24,6 +24,7 @@ import { toast } from 'react-toastify';
 import toastError from '../../errors/toastError';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
 //import logo from "../../assets/logo.png";
 import logoDefault from "../../assets/logo.png";
 

@@ -41,9 +41,10 @@ import ColorModeContext from "../layout/themeContext";
 import Brightness4Icon from '@material-ui/icons/Brightness4';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 
-import logo from "../../assets/logo.png";
-//import logoDefault from "../../assets/logo.png";
-//const logo = process.env.REACT_APP_LOGO || logoDefault;
+//import logo from "../../assets/logo.png";
+import logoDefault from "../assets/logo.png";
+
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const drawerWidth = 240;
 
