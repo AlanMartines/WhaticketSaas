@@ -25,14 +25,16 @@ import CheckIcon from "@material-ui/icons/Check";
 import CloseIcon from "@material-ui/icons/Close";
 import InputMask from "react-input-mask";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-//import logo from "../../assets/logo.png";
-import logoDefault from "../../assets/logo.png";
-const logo = process.env.REACT_APP_LOGO || logoDefault;
+
 import { i18n } from "../../translate/i18n";
 import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import usePlans from "../../hooks/usePlans";
 import moment from "moment";
+
+//import logo from "../../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const useStyles = makeStyles((theme) => ({
 	paper: {

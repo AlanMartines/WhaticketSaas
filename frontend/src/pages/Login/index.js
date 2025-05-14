@@ -17,8 +17,9 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 
 //import logo from "../../assets/logo.png";
 import logoDefault from "../../assets/logo.png";
-const logo = process.env.REACT_APP_LOGO || logoDefault;
 import backgroundImage from "../../assets/background.jpeg";
+
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const Copyright = () => {
 	return (

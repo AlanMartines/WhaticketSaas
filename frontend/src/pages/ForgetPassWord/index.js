@@ -20,11 +20,14 @@ import Container from "@material-ui/core/Container";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
 import moment from "moment";
-import logo from "../../assets/logo.png";
 import { toast } from 'react-toastify'; 
 import toastError from '../../errors/toastError';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+//import logo from "../../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
+
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const useStyles = makeStyles((theme) => ({
   root: {
