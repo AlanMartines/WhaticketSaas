@@ -122,9 +122,9 @@ DB_HOST=localhost # Host do banco de dados
 DB_PORT=5432 # Porta do banco de dados
 DB_USER=whaticket # Usuário para acessar o banco de dados
 DB_PASS=<sua_senha> # Senha do usuário do banco de dados
-DB_NAME=dbwhaticket # Nome do banco de dados
+DB_NAME=dbWhaticketSaas # Nome do banco de dados
 DB_DEBUG=false # Habilita ou desabilita logs de debug no banco de dados
-DB_BACKUP=/usr/local/whaticket/backup # Caminho para backup do banco de dados
+DB_BACKUP=/usr/local/WhaticketSaas/backup # Caminho para backup do banco de dados
 
 # Configurações de JWT (JSON Web Tokens)
 JWT_SECRET='53pJTvkL9T6q2jYFFKwBM0opl' # Chave secreta para tokens de autenticação
