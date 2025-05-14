@@ -222,11 +222,9 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					patchMessageBeforeSending,
 				};
 				//
-        wsocket = makeWASocket(
-					//
-					SocketConfig
-					//
-        );
+				wsocket = makeWASocket({
+					...SocketConfig
+				});
 
 				async function getMessage(key) {
 					if (store) {
