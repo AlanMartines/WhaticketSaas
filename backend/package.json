@@ -38,6 +38,7 @@
     "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
     "fluent-ffmpeg": "^2.1.2",
+    "ffmpeg-static":"^5.2.0",
     "gn-api-sdk-typescript": "^1.0.7",
     "http-graceful-shutdown": "^3.1.6",
     "jsonwebtoken": "^8.5.1",
