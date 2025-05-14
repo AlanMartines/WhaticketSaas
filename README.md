@@ -258,3 +258,4 @@ https://api.seudominio.com.br/webhook/fb
 * [WhaticketSaas](https://github.com/Leandroledledled/WhaticketSaas) de Leandroledledled.
 * [WhaticketSaas](https://github.com/danilorcte/whaticketsaas) de danilorcte.
 * [WhaticketSaas](https://github.com/rengawms/whaticketSaaS) de rengawms.
+* [WhaticketSaas](https://github.com/diegomustafamarino/whaticketsaas) de diegomustafamarino.
