@@ -27,6 +27,7 @@ type StoreData = {
   shortcode: string;
   message: string;
   userId: number | number;
+  geral: boolean;  
 };
 
 type FindParams = {
@@ -35,8 +36,8 @@ type FindParams = {
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
-  const { searchParam, pageNumber, userId } = req.query as IndexQuery;
-  const { companyId } = req.user;
+  const { searchParam, pageNumber } = req.query as IndexQuery;
+    const { companyId, id: userId } = req.user;
 
   const { records, count, hasMore } = await ListService({
     searchParam,
@@ -179,19 +180,44 @@ export const deleteMedia = async (
   const { companyId } = req.user
 
   try {
+    // Encontre a mensagem rápida
     const quickmessage = await QuickMessage.findByPk(id);
-    const filePath = path.resolve("public","quickMessage",quickmessage.mediaName);
+
+    // Verifique se a mensagem foi encontrada
+    if (!quickmessage) {
+      throw new AppError("Arquivo não encontrado", 404);
+    }
+
+    // Aplique a mesma lógica de renomeação para gerar o nome correto do arquivo
+    let filename = quickmessage.mediaName;
+
+    // Se o filename já tiver sido alterado (adicionando timestamp), remova esse prefixo
+    const timestampRegex = /^\d+_/;
+    if (timestampRegex.test(filename)) {
+      // Remover o timestamp do começo do nome do arquivo
+      filename = filename.replace(timestampRegex, '');
+    }
+
+    const filePath = path.resolve(
+      "public",
+      `company${companyId}`,
+      "quick",
+      filename
+    );
+
     const fileExists = fs.existsSync(filePath);
     if (fileExists) {
-      fs.unlinkSync(filePath);
+      fs.unlinkSync(filePath); // Exclui o arquivo
     }
-    quickmessage.update ({
+
+    // Atualiza os dados da mensagem no banco
+    await quickmessage.update({
       mediaPath: null,
       mediaName: null
     });
 
     return res.send({ mensagem: "Arquivo Excluído" });
-    } catch (err: any) {
-      throw new AppError(err.message);
+  } catch (err: any) {
+    throw new AppError(err.message);
   }
 };

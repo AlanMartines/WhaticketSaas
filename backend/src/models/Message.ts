@@ -44,17 +44,20 @@ class Message extends Model<Message> {
 
   @Column(DataType.TEXT)
   body: string;
-
+  
+  @Column(DataType.JSON)
+  reactions: { type: string; userId: number; }[];
+  
   @Column(DataType.STRING)
   get mediaUrl(): string | null {
     if (this.getDataValue("mediaUrl")) {
-      return `${process.env.BACKEND_URL}/public/${this.getDataValue(
-        "mediaUrl"
-      )}`;
+      // return `${process.env.BACKEND_URL}/public/${this.getDataValue("mediaUrl")}`;
+
+      return `${process.env.BACKEND_URL}/public/company${this.companyId}/${this.getDataValue("mediaUrl")}`;
+
     }
     return null;
   }
-
   @Column
   mediaType: string;
 
@@ -108,6 +111,11 @@ class Message extends Model<Message> {
   @Default(false)
   @Column
   isEdited: boolean;
+  
+  @Default(false)
+  @Column
+  isForwarded: boolean;
+  
 }
 
 export default Message;

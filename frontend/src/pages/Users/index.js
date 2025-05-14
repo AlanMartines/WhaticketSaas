@@ -21,6 +21,7 @@ import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
 import Title from "../../components/Title";
+import UserStatusIcon from "../../components/UserModal/statusIcon";
 
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
@@ -29,6 +30,8 @@ import UserModal from "../../components/UserModal";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import toastError from "../../errors/toastError";
 import { SocketContext } from "../../context/Socket/SocketContext";
+
+
 
 const reducer = (state, action) => {
   if (action.type === "LOAD_USERS") {
@@ -242,6 +245,7 @@ const Users = () => {
 			<TableCell align="center">
                 {i18n.t("users.table.id")}
               </TableCell>
+              <TableCell align="center">{i18n.t("users.table.status")}</TableCell>
               <TableCell align="center">{i18n.t("users.table.name")}</TableCell>
               <TableCell align="center">
                 {i18n.t("users.table.email")}
@@ -259,6 +263,7 @@ const Users = () => {
               {users.map((user) => (
                 <TableRow key={user.id}>
 				  <TableCell align="center">{user.id}</TableCell>
+				  <TableCell align="center"><UserStatusIcon user={user} /></TableCell>
                   <TableCell align="center">{user.name}</TableCell>
                   <TableCell align="center">{user.email}</TableCell>
                   <TableCell align="center">{user.profile}</TableCell>

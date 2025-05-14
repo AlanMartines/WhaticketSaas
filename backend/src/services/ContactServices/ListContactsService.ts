@@ -1,5 +1,6 @@
 import { Sequelize, Op } from "sequelize";
 import Contact from "../../models/Contact";
+import Ticket from "../../models/Ticket";
 
 interface Request {
   searchParam?: string;
@@ -39,6 +40,13 @@ const ListContactsService = async ({
   const { count, rows: contacts } = await Contact.findAndCountAll({
     where: whereCondition,
     limit,
+    include: [
+      {
+        model: Ticket,
+        as: "tickets",
+        attributes: ["id", "status", "createdAt", "updatedAt"]
+      }
+    ],
     offset,
     order: [["name", "ASC"]]
   });

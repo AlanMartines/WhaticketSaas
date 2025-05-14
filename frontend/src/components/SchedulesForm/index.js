@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles, TextField, Grid, Container } from "@material-ui/core";
+import { makeStyles, TextField, Grid } from "@material-ui/core";
 import { Formik, Form, FastField, FieldArray } from "formik";
 import { isArray } from "lodash";
 import NumberFormat from "react-number-format";
 import ButtonWithSpinner from "../ButtonWithSpinner";
+import { i18n } from "../../translate/i18n";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textfield: {
     width: "100%",
+    fontSize: "0.875em"
   },
   row: {
     paddingTop: theme.spacing(2),
@@ -34,13 +37,13 @@ function SchedulesForm(props) {
   const classes = useStyles();
 
   const [schedules, setSchedules] = useState([
-    { weekday: "Segunda-feira", weekdayEn: "monday", startTime: "", endTime: "", },
-    { weekday: "Terça-feira", weekdayEn: "tuesday", startTime: "", endTime: "", },
-    { weekday: "Quarta-feira", weekdayEn: "wednesday", startTime: "", endTime: "", },
-    { weekday: "Quinta-feira", weekdayEn: "thursday", startTime: "", endTime: "", },
-    { weekday: "Sexta-feira", weekdayEn: "friday", startTime: "", endTime: "" },
-    { weekday: "Sábado", weekdayEn: "saturday", startTime: "", endTime: "" },
-    { weekday: "Domingo", weekdayEn: "sunday", startTime: "", endTime: "" },
+    { weekday: i18n.t("queueModal.serviceHours.monday"), weekdayEn: "monday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.tuesday"), weekdayEn: "tuesday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.wednesday"), weekdayEn: "wednesday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.thursday"), weekdayEn: "thursday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.friday"), weekdayEn: "friday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.saturday"), weekdayEn: "saturday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
+    { weekday: i18n.t("queueModal.serviceHours.sunday"), weekdayEn: "sunday", startTimeA: "", endTimeA: "", startTimeB: "", endTimeB: "", },
   ]);
 
   useEffect(() => {
@@ -73,62 +76,106 @@ function SchedulesForm(props) {
               <Grid spacing={4} container>
                 {values.schedules.map((item, index) => {
                   return (
-                      <Container>
+                    <Grid key={index} xs={12} md={4} item>
+                      <Grid container>
+                        <Grid className={classes.control} xs={12} item>
                           <FastField
                             as={TextField}
-                            label="Dia da Semana"
+                            label={i18n.t("queueModal.serviceHours.dayWeek")}
                             name={`schedules[${index}].weekday`}
                             disabled
                             variant="outlined"
-                            style={{ marginRight: "3.2%", width: "30%" }}
+                            className={classes.fullWidth}
                             margin="dense"
                           />
+                        </Grid>
+                        <Grid className={classes.control} xs={12} md={6} item>
                           <FastField
-                            name={`schedules[${index}].startTime`}
-                            >
+                            label={i18n.t("queueModal.serviceHours.startTimeA")}
+                            name={`schedules[${index}].startTimeA`}
+                          >
                             {({ field }) => (
                               <NumberFormat
-                                label="Hora de Inicial"
                                 {...field}
                                 variant="outlined"
                                 margin="dense"
                                 customInput={TextField}
                                 format="##:##"
-                                style={{ marginRight: "3.2%", width: "30%" }}
+                                className={classes.fullWidth}
+                                label={i18n.t("queueModal.serviceHours.startTimeA")}
                               />
                             )}
                           </FastField>
+                        </Grid>
+                        <Grid className={classes.control} xs={12} md={6} item>
                           <FastField
-                            name={`schedules[${index}].endTime`}
-                            >
+                            label={i18n.t("queueModal.serviceHours.endTimeA")}
+                            name={`schedules[${index}].endTimeA`}
+                          >
                             {({ field }) => (
                               <NumberFormat
-                                label="Hora de Final"
                                 {...field}
                                 variant="outlined"
                                 margin="dense"
                                 customInput={TextField}
                                 format="##:##"
-                                style={{ marginRight: "3.2%", width: "30%" }}
+                                className={classes.fullWidth}
+                                label={i18n.t("queueModal.serviceHours.endTimeA")}
                               />
                             )}
                           </FastField>
-
-                      </Container>
-
+                        </Grid>
+                        <Grid className={classes.control} xs={12} md={6} item>
+                          <FastField
+                            label={i18n.t("queueModal.serviceHours.startTimeB")}
+                            name={`schedules[${index}].startTimeB`}
+                          >
+                            {({ field }) => (
+                              <NumberFormat
+                                {...field}
+                                variant="outlined"
+                                margin="dense"
+                                customInput={TextField}
+                                format="##:##"
+                                className={classes.fullWidth}
+                                label={i18n.t("queueModal.serviceHours.startTimeB")}
+                              />
+                            )}
+                          </FastField>
+                        </Grid>
+                        <Grid className={classes.control} xs={12} md={6} item>
+                          <FastField
+                            label={i18n.t("queueModal.serviceHours.endTimeB")}
+                            name={`schedules[${index}].endTimeB`}
+                          >
+                            {({ field }) => (
+                              <NumberFormat
+                                {...field}
+                                variant="outlined"
+                                margin="dense"
+                                customInput={TextField}
+                                format="##:##"
+                                className={classes.fullWidth}
+                                label={i18n.t("queueModal.serviceHours.endTimeB")}
+                              />
+                            )}
+                          </FastField>
+                        </Grid>
+                      </Grid>
+                    </Grid>
                   );
                 })}
               </Grid>
             )}
           ></FieldArray>
-          <div style={{ textAlign: "center", marginTop: "2%" }} className={classes.buttonContainer}>
+          <div className={classes.buttonContainer}>
             <ButtonWithSpinner
               loading={loading}
               type="submit"
               color="primary"
               variant="contained"
             >
-              {labelSaveButton ?? "Salvar"}
+              {labelSaveButton ?? i18n.t("whatsappModal.buttons.okEdit")}
             </ButtonWithSpinner>
           </div>
         </Form>

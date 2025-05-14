@@ -38,4 +38,6 @@ contactRoutes.delete("/contacts/:contactId", isAuth, ContactController.remove);
 
 contactRoutes.get("/contact", isAuth, ContactController.getContactVcard);
 
+
+
 export default contactRoutes;

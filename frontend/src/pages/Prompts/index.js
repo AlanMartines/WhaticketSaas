@@ -192,20 +192,19 @@ const Prompts = () => {
       {/* Box vermelha com o aviso */}
       <Paper className={classes.redBox} variant="outlined">
         <Typography variant="body1">
-          <strong>Aviso Importante:</strong> Informamos aos usuários do Netobot que a interrupção no funcionamento do OpenAI não é causada por problemas no sistema. O OpenAI oferece um crédito gratuito de $5 USD para novos cadastros, com validade de aproximadamente três meses. Após o término desse período ou esgotamento do crédito, é necessário recarregar a conta para continuar utilizando os serviços. Recomendamos verificar se o crédito gratuito expirou e, caso necessário, realizar a recarga para evitar interrupções no uso do OpenAI com o Netobot. Em caso de dúvidas ou necessidade de suporte, nossa equipe está à disposição para ajudar. Agradecemos pela compreensão e seguimos comprometidos em oferecer a melhor experiência possível aos nossos usuários.
+          <strong>Aviso Importante:</strong> Para todos os usuários do Whaticket que notaram uma interrupção no funcionamento do OpenAI, gostaríamos de esclarecer que isso não se trata de um erro do sistema. O OpenAI oferece um crédito gratuito de $5 USD para novos cadastros, porém, este benefício também está sujeito a um limite de tempo, geralmente em torno de três meses. Quando o crédito disponibilizado se esgota, é necessário recarregar a conta para continuar utilizando o serviço. É importante estar ciente dessa política para garantir uma experiência contínua e sem interrupções no uso do OpenAI com o Whaticket. Se você notou que o serviço parou de funcionar, verifique se seu crédito gratuito expirou e considere a recarga da conta, se necessário. Estamos à disposição para ajudar e esclarecer quaisquer dúvidas adicionais que possam surgir. Obrigado pela compreensão e continuaremos trabalhando para oferecer o melhor serviço possível aos nossos usuários.
         </Typography>
         {/* Links úteis */}
         <Typography variant="body1">
           <strong>Links Úteis:</strong>
           <br />
-          Verificar Uso: <a href="https://platform.openai.com/usage">https://platform.openai.com/usage</a>
+          Uso: <a href="https://platform.openai.com/usage">https://platform.openai.com/usage</a>
           <br />
-          Gerenciar Faturas: <a href="https://platform.openai.com/account/billing/overview">https://platform.openai.com/account/billing/overview</a>
+          Fatura: <a href="https://platform.openai.com/account/billing/overview">https://platform.openai.com/account/billing/overview</a>
           <br />
-          Chaves de API: <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>
+          API: <a href="https://platform.openai.com/api-keys">https://platform.openai.com/api-keys</a>
         </Typography>
       </Paper>
-
       {/* Fim da box vermelha */}
 
       <ConfirmationModal

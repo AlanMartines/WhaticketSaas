@@ -60,6 +60,9 @@ class Plan extends Model<Plan> {
 
   @Column
   useIntegrations: boolean;
+  
+  @Column
+  useInternal: boolean; 
 }
 
 export default Plan;

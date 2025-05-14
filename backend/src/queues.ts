@@ -11,6 +11,7 @@ import GetWhatsappWbot from "./helpers/GetWhatsappWbot";
 import formatBody from "./helpers/Mustache";
 import { MessageData, SendMessage } from "./helpers/SendMessage";
 import { getIO } from "./libs/socket";
+import { getWbot } from "./libs/wbot";
 import Campaign from "./models/Campaign";
 import CampaignSetting from "./models/CampaignSetting";
 import CampaignShipping from "./models/CampaignShipping";
@@ -266,7 +267,7 @@ async function handleSendScheduledMessage(job) {
 
     let filePath = null;
     if (schedule.mediaPath) {
-      filePath = path.resolve("public", schedule.mediaPath);
+      filePath = path.resolve("public", `company${schedule.companyId}`, schedule.mediaPath);
     }
 
     await SendMessage(whatsapp, {
@@ -715,49 +716,43 @@ async function handleDispatchCampaign(job) {
 
     const chatId = `${campaignShipping.number}@s.whatsapp.net`;
 
-    let body = campaignShipping.message;
-
     if (campaign.confirmation && campaignShipping.confirmation === null) {
-      body = campaignShipping.confirmationMessage
-    }
+      await wbot.sendMessage(chatId, {
+        text: campaignShipping.confirmationMessage
+      });
+      await campaignShipping.update({ confirmationRequestedAt: moment() });
+    } else {
+      await wbot.sendMessage(chatId, {
+        text: campaignShipping.message
+      });
 
-    if (!isNil(campaign.fileListId)) {
-      try {
-        const publicFolder = path.resolve(__dirname, "..", "public");
-        const files = await ShowFileService(campaign.fileListId, campaign.companyId)
-        const folder = path.resolve(publicFolder, "fileList", String(files.id))
-        for (const [index, file] of files.options.entries()) {
-          const options = await getMessageOptions(file.path, path.resolve(folder, file.path), file.name);
+      if (!isNil(campaign.fileListId)) {
+        try {
+          const publicFolder = path.resolve(__dirname, "..", "public", `company${campaign.companyId}`);
+          const files = await ShowFileService(campaign.fileListId, campaign.companyId);
+          const folder = path.resolve(publicFolder, "fileList", String(files.id));
+      
+          for (const [index, file] of files.options.entries()) {
+            const options = await getMessageOptions(file.path, path.resolve(folder, file.path), file.name);
+            await wbot.sendMessage(chatId, { ...options });
+          }
+        } finally {
+          // Caso precise executar alguma ação independentemente de erro
+        }
+      }
+      
+
+      if (campaign.mediaPath) {
+        //const filePath = path.resolve("public", campaign.mediaPath);
+        const filePath = path.resolve(`public/company${campaign.companyId}`, campaign.mediaPath);
+        //const options = await getMessageOptions(campaign.mediaName, filePath);
+        const options = await getMessageOptions(campaign.mediaName, filePath);
+        if (Object.keys(options).length) {
           await wbot.sendMessage(chatId, { ...options });
-        };
-      } catch (error) {
-        logger.info(error);
+        }
       }
+      await campaignShipping.update({ deliveredAt: moment() });
     }
-
-    if (campaign.mediaPath) {
-      const publicFolder = path.resolve(__dirname, "..", "public");
-      const filePath = path.join(publicFolder, campaign.mediaPath);
-
-      const options = await getMessageOptions(campaign.mediaName, filePath, body);
-      if (Object.keys(options).length) {
-        await wbot.sendMessage(chatId, { ...options });
-      }
-    }
-    else {
-      if (campaign.confirmation && campaignShipping.confirmation === null) {
-        await wbot.sendMessage(chatId, {
-          text: body
-        });
-        await campaignShipping.update({ confirmationRequestedAt: moment() });
-      } else {
-
-        await wbot.sendMessage(chatId, {
-          text: body
-        });
-      }
-    }
-    await campaignShipping.update({ deliveredAt: moment() });
 
     await verifyAndFinalizeCampaign(campaign);
 
@@ -795,79 +790,112 @@ async function handleLoginStatus(job) {
 
 
 async function handleInvoiceCreate() {
-  logger.info("Iniciando geração de boletos");
+  logger.info("GERENDO RECEITA...");
   const job = new CronJob('*/5 * * * * *', async () => {
-
-
     const companies = await Company.findAll();
     companies.map(async c => {
-      var dueDate = c.dueDate;
+    
+      const status = c.status;
+      const dueDate = c.dueDate; 
       const date = moment(dueDate).format();
       const timestamp = moment().format();
-      const hoje = moment(moment()).format("DD/MM/yyyy");
-      var vencimento = moment(dueDate).format("DD/MM/yyyy");
+      const hoje = moment().format("DD/MM/yyyy");
+      const vencimento = moment(dueDate).format("DD/MM/yyyy");
+      const diff = moment(vencimento, "DD/MM/yyyy").diff(moment(hoje, "DD/MM/yyyy"));
+      const dias = moment.duration(diff).asDays();
+    
+      if(status === true){
 
-      var diff = moment(vencimento, "DD/MM/yyyy").diff(moment(hoje, "DD/MM/yyyy"));
-      var dias = moment.duration(diff).asDays();
+      	//logger.info(`EMPRESA: ${c.id} está ATIVA com vencimento em: ${vencimento} | ${dias}`);
+      
+      	//Verifico se a empresa está a mais de 10 dias sem pagamento
+        
+        if(dias <= -3){
+       
+          logger.info(`EMPRESA: ${c.id} está VENCIDA A MAIS DE 3 DIAS... INATIVANDO... ${dias}`);
+          c.status = false;
+          await c.save(); // Save the updated company record
+          logger.info(`EMPRESA: ${c.id} foi INATIVADA.`);
+          logger.info(`EMPRESA: ${c.id} Desativando conexões com o WhatsApp...`);
+          
+          try {
+    		const whatsapps = await Whatsapp.findAll({
+      		where: {
+        		companyId: c.id,
+      		},
+      			attributes: ['id','status','session'],
+    		});
 
-      if (dias < 20) {
-        const plan = await Plan.findByPk(c.planId);
+    		for (const whatsapp of whatsapps) {
 
-        const sql = `SELECT COUNT(*) mycount FROM "Invoices" WHERE "companyId" = ${c.id} AND "dueDate"::text LIKE '${moment(dueDate).format("yyyy-MM-DD")}%';`
-        const invoice = await sequelize.query(sql,
-          { type: QueryTypes.SELECT }
-        );
-        if (invoice[0]['mycount'] > 0) {
+            	if (whatsapp.session) {
+    				await whatsapp.update({ status: "DISCONNECTED", session: "" });
+    				const wbot = getWbot(whatsapp.id);
+    				await wbot.logout();
+                	logger.info(`EMPRESA: ${c.id} teve o WhatsApp ${whatsapp.id} desconectado...`);
+  				}
+    		}
+          
+  		  } catch (error) {
+    		// Lidar com erros, se houver
+    		console.error('Erro ao buscar os IDs de WhatsApp:', error);
+    		throw error;
+  		  }
 
-        } else {
-          const sql = `INSERT INTO "Invoices" (detail, status, value, "updatedAt", "createdAt", "dueDate", "companyId")
-          VALUES ('${plan.name}', 'open', '${plan.value}', '${timestamp}', '${timestamp}', '${date}', ${c.id});`
+        
+        }else{ // ELSE if(dias <= -3){
+        
+          const plan = await Plan.findByPk(c.planId);
+        
+          const sql = `SELECT * FROM "Invoices" WHERE "companyId" = ${c.id} AND "status" = 'open';`
+          const openInvoices = await sequelize.query(sql, { type: QueryTypes.SELECT }) as { id: number, dueDate: Date }[];
 
-          const invoiceInsert = await sequelize.query(sql,
-            { type: QueryTypes.INSERT }
-          );
+          const existingInvoice = openInvoices.find(invoice => moment(invoice.dueDate).format("DD/MM/yyyy") === vencimento);
+        
+          if (existingInvoice) {
+            // Due date already exists, no action needed
+            //logger.info(`Fatura Existente`);
+        
+          } else if (openInvoices.length > 0) {
+            const updateSql = `UPDATE "Invoices" SET "dueDate" = '${date}', "updatedAt" = '${timestamp}' WHERE "id" = ${openInvoices[0].id};`;
 
-          /*           let transporter = nodemailer.createTransport({
-                      service: 'gmail',
-                      auth: {
-                        user: 'email@gmail.com',
-                        pass: 'senha'
-                      }
-                    });
- 
-                    const mailOptions = {
-                      from: 'heenriquega@gmail.com', // sender address
-                      to: `${c.email}`, // receiver (use array of string for a list)
-                      subject: 'Fatura gerada - Sistema', // Subject line
-                      html: `Olá ${c.name} esté é um email sobre sua fatura!<br>
-          <br>
-          Vencimento: ${vencimento}<br>
-          Valor: ${plan.value}<br>
-          Link: ${process.env.FRONTEND_URL}/financeiro<br>
-          <br>
-          Qualquer duvida estamos a disposição!
-                      `// plain text body
-                    };
- 
-                    transporter.sendMail(mailOptions, (err, info) => {
-                      if (err)
-                        console.log(err)
-                      else
-                        console.log(info);
-                    }); */
+            await sequelize.query(updateSql, { type: QueryTypes.UPDATE });
+        
+            logger.info(`Fatura Atualizada ID: ${openInvoices[0].id}`);
+        
+          } else {
+          
+            const sql = `INSERT INTO "Invoices" (detail, status, value, "updatedAt", "createdAt", "dueDate", "companyId")
+            VALUES ('${plan.name}', 'open', '${plan.value}', '${timestamp}', '${timestamp}', '${date}', ${c.id});`
 
-        }
+            const invoiceInsert = await sequelize.query(sql, { type: QueryTypes.INSERT });
+        
+            logger.info(`Fatura Gerada para o cliente: ${c.id}`);
 
+            // Rest of the code for sending email
+          }
+        
+          
+        
+        
+        } // if(dias <= -6){
+        
 
-
-
-
+      }else{ // ELSE if(status === true){
+      
+      	//logger.info(`EMPRESA: ${c.id} está INATIVA`);
+      
       }
+    
+    
 
     });
   });
-  job.start()
+
+  job.start();
 }
+
+
 
 handleCloseTicketsAutomatic()
 

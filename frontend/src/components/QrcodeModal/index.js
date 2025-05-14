@@ -53,7 +53,7 @@ const QrcodeModal = ({ open, onClose, whatsAppId }) => {
         <Paper elevation={0} style={{ display: "flex", alignItems: "center" }}>
           <div style={{ marginRight: "20px" }}>
             <Typography variant="h2" component="h2" color="textPrimary" gutterBottom style={{ fontFamily: "Montserrat", fontWeight: "bold", fontSize:"20px",}}>
-              Utilize o Netobot com seu WhatsApp:
+              Utilize o Whaticket com seu WhatsApp:
             </Typography>
             <Typography variant="body1" color="textPrimary" gutterBottom>
               1 - Abra o WhatsApp no seu celular

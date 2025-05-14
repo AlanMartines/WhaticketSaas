@@ -1,22 +1,18 @@
-import React from "react";
+import React, { useState } from "react";  // Import useState
 import { useParams } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles"; // Importando useTheme
 
 import TicketsManager from "../../components/TicketsManagerTabs/";
 import Ticket from "../../components/Ticket/";
 import { i18n } from "../../translate/i18n";
-//import logo from "../../assets/logo.png";
-import logoDefault from "../../assets/logo.png";
-
-const logo = process.env.REACT_APP_LOGO || logoDefault;
 
 const useStyles = makeStyles(theme => ({
 	chatContainer: {
 		flex: 1,
 		// backgroundColor: "#eee",
-		padding: theme.spacing(1), //Aqui ele ajusta espaço na tela de ticket
+		padding: theme.spacing(0), //Aqui ele ajusta espaço na tela de ticket
 		height: `calc(100% - 48px)`,
 		overflowY: "hidden",
 	},
@@ -39,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 		flexDirection: "column",
 	},
 	welcomeMsg: {
-		backgroundColor: theme.palette.boxticket, //DARK MODE PLW DESIGN//
+		backgroundColor: theme.palette.boxticket, //DARK MODE//
 		display: "flex",
 		justifyContent: "space-evenly",
 		alignItems: "center",
@@ -49,6 +45,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TicketsCustom = () => {
+	// Initialize useTheme and useState inside the component
+	const theme = useTheme();
+	const [logoImg, setLogoImg] = useState(
+		theme.palette.type === "light"
+			? `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`
+			: `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`
+	);
+
 	const classes = useStyles();
 	const { ticketId } = useParams();
 
@@ -66,12 +70,16 @@ const TicketsCustom = () => {
 							</>
 						) : (
 							<Paper square variant="outlined" className={classes.welcomeMsg}>
-							{/* PLW DESIGN LOGO */}
-							<div>
-							<center><img style={{ margin: "0 auto", width: "70%" }} src={logo} alt="logologin" /></center>
-							</div>
-							{/* PLW DESIGN LOGO */}
-							{/*<span>{i18n.t("chat.noTicketMessage")}</span>*/}
+								<div>
+									<center>
+										<img
+											style={{ margin: "0 auto", width: "80%" }}
+											src={`${logoImg}?r=${Math.random()}`}
+											alt={`${process.env.REACT_APP_NAME_SYSTEM}`}
+										/>
+									</center>
+								</div>
+								{/* <span>{i18n.t("chat.noTicketMessage")}</span> */}
 							</Paper>
 						)}
 					</Grid>

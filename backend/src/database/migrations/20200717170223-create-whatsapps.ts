@@ -23,7 +23,7 @@ module.exports = {
       },
       plugged: {
         type: DataTypes.BOOLEAN
-      },
+      },	  
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false

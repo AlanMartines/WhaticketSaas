@@ -2,22 +2,20 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
+
+import { makeStyles, useTheme } from "@material-ui/core/styles"; // Importando useTheme
 
 import TicketsManager from "../../components/TicketsManager/";
 import Ticket from "../../components/Ticket/";
 
-//import logo from "../../assets/logo.png";
-import { i18n } from "../../translate/i18n";
-import logoDefault from "../../assets/logo.png";
 
-const logo = process.env.REACT_APP_LOGO || logoDefault;
+import { i18n } from "../../translate/i18n";
 
 const useStyles = makeStyles(theme => ({
 	chatContainer: {
 		flex: 1,
 		// backgroundColor: "#eee",
-		padding: theme.spacing(4),
+		padding: theme.spacing(0),
 		height: `calc(100% - 48px)`,
 		overflowY: "hidden",
 	},
@@ -53,6 +51,15 @@ const Chat = () => {
 	const classes = useStyles();
 	const { ticketId } = useParams();
 
+    // Definindo os logos para modo claro e escuro
+    const logoLight = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
+    const logoDark = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`;
+
+    // Definindo o logo inicial com base no modo de tema atual
+    const initialLogo = theme.palette.type === 'light' ? logoLight : logoDark;
+    const [logoImg, setLogoImg] = useState(initialLogo);
+
+
 	return (
 		<div className={classes.chatContainer}>
 			<div className={classes.chatPapper}>
@@ -69,7 +76,7 @@ const Chat = () => {
 							<Paper square variant="outlined" className={classes.welcomeMsg}>
 							
 							<div>
-							<center><img style={{ margin: "0 auto", width: "70%" }} src={logo} alt="logologin" /></center>
+							 <center><img style={{ margin: "0 auto", width: "80%" }} src={`${logoImg}?r=${Math.random()}`} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} /></center>
 							</div>
 							
 							{/*<span>{i18n.t("chat.noTicketMessage")}</span>*/}

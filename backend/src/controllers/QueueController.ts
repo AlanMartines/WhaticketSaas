@@ -56,11 +56,11 @@ export const deleteMedia = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  const { queueId } = req.params;
+  const {queueId} = req.params;
 
   try {
     const queue = await Queue.findByPk(queueId);
-    const filePath = path.resolve("public", queue.mediaPath);
+    const filePath = path.resolve("public", `company${queue.companyId}`, queue.mediaPath);
     const fileExists = fs.existsSync(filePath);
     if (fileExists) {
       fs.unlinkSync(filePath);
@@ -69,7 +69,7 @@ export const deleteMedia = async (
     queue.mediaPath = null;
     queue.mediaName = null;
     await queue.save();
-    return res.send({ mensagem: "Arquivo excluído" });
+    return res.send({mensagem: "Arquivo excluído"});
   } catch (err: any) {
     throw new AppError(err.message);
   }

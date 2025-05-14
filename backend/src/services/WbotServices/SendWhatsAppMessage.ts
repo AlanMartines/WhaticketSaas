@@ -12,12 +12,14 @@ interface Request {
   body: string;
   ticket: Ticket;
   quotedMsg?: Message;
+  isForwarded?: boolean;  
 }
 
 const SendWhatsAppMessage = async ({
   body,
   ticket,
-  quotedMsg
+  quotedMsg,
+  isForwarded = false
 }: Request): Promise<WAMessage> => {
   let options = {};
   const wbot = await GetTicketWbot(ticket);
@@ -51,7 +53,8 @@ const SendWhatsAppMessage = async ({
     map_msg.set(ticket.contact.number, { lastSystemMsg: body })
     console.log('lastSystemMsg:::::::::::::::::::::::::::', ticket.contact.number)
     const sentMessage = await wbot.sendMessage(number, {
-      text: formatBody(body, ticket.contact)
+      text: formatBody(body, ticket.contact),
+	  contextInfo: { forwardingScore: isForwarded ? 2 : 0, isForwarded: isForwarded ? true : false }
     },
       {
         ...options

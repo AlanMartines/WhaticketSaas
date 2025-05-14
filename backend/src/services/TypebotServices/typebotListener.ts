@@ -7,6 +7,7 @@ import { logger } from "../../utils/logger";
 import { isNil } from "lodash";
 import UpdateTicketService from "../TicketServices/UpdateTicketService";
 
+
 type Session = WASocket & {
     id?: number;
 };
@@ -17,6 +18,7 @@ interface Request {
     ticket: Ticket;
     typebot: QueueIntegrations;
 }
+
 
 const typebotListener = async ({
     wbot,
@@ -38,6 +40,7 @@ const typebotListener = async ({
     } = typebot;
 
     const number = msg.key.remoteJid.replace(/\D/g, '');
+
     let body = getBodyMessage(msg);
 
     async function createSession(msg, typebot, number) {
@@ -67,39 +70,43 @@ const typebotListener = async ({
             };
 
             const request = await axios.request(config);
+
             return request.data;
 
         } catch (err) {
-            logger.info("Erro ao criar sessão do typebot: ", err);
+            logger.info("Erro ao criar sessão do typebot: ", err)
             throw err;
         }
     }
 
-    let sessionId;
-    let dataStart;
+
+    let sessionId
+    let dataStart
     let status = false;
     try {
-        const dataLimite = new Date();
+        const dataLimite = new Date()
         dataLimite.setMinutes(dataLimite.getMinutes() - Number(typebotExpires));
+
 
         if (typebotExpires > 0 && ticket.updatedAt < dataLimite) {
             await ticket.update({
                 typebotSessionId: null,
                 isBot: true
             });
+
             await ticket.reload();
         }
 
-        if (isNil(ticket.typebotSessionId)) {
+        if (isNil(ticket.typebotSessionId)) {            
             dataStart = await createSession(msg, typebot, number);
-            sessionId = dataStart.sessionId;
+            sessionId = dataStart.sessionId
             status = true;
             await ticket.update({
                 typebotSessionId: sessionId,
                 typebotStatus: true,
                 useIntegration: true,
                 integrationId: typebot.id
-            });
+            })
         } else {
             sessionId = ticket.typebotSessionId;
             status = ticket.typebotStatus;
@@ -107,10 +114,13 @@ const typebotListener = async ({
 
         if (!status) return;
 
+        //let body = getConversationMessage(msg);
+
+
         if (body !== typebotKeywordFinish && body !== typebotKeywordRestart) {
-            let requestContinue;
-            let messages;
-            let input;
+            let requestContinue
+            let messages
+            let input
             if (dataStart?.messages.length === 0 || dataStart === undefined) {
                 const reqData = JSON.stringify({
                     "message": body
@@ -135,7 +145,7 @@ const typebotListener = async ({
             }
 
             if (messages?.length === 0) {
-                return; // Não envia typebotUnknownMessage
+                await wbot.sendMessage(`${number}@c.us`, { text: typebotUnknownMessage });
             } else {
                 for (const message of messages) {
                     if (message.type === 'text') {
@@ -200,7 +210,7 @@ const typebotListener = async ({
                                 }
 
                                 if (element.bold) {
-                                    text = `*${text}*`;
+                                    text = `*${text}*`
                                 }
                                 if (element.italic) {
                                     text = `_${text}_`;
@@ -231,11 +241,11 @@ const typebotListener = async ({
                             try {
                                 let jsonGatilho = JSON.parse(gatilho);
 
-                                if (jsonGatilho.stopBot && isNil(jsonGatilho.userId) && isNil(jsonGatilho.queueId)) {
+                                if (jsonGatilho.stopBot  && isNil(jsonGatilho.userId)  && isNil(jsonGatilho.queueId)) {
                                     await ticket.update({
                                         useIntegration: false,
                                         isBot: false
-                                    });
+                                    })
 
                                     return;
                                 }
@@ -249,7 +259,7 @@ const typebotListener = async ({
                                         },
                                         ticketId: ticket.id,
                                         companyId: ticket.companyId
-                                    });
+                                    })
 
                                     return;
                                 }
@@ -265,50 +275,87 @@ const typebotListener = async ({
                                         },
                                         ticketId: ticket.id,
                                         companyId: ticket.companyId
-                                    });
+                                    })
 
                                     return;
                                 }
                             } catch (err) {
-                                throw err;
+                                throw err
                             }
                         }
 
-                        await wbot.presenceSubscribe(msg.key.remoteJid);
-                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid);
-                        await delay(typebotDelayMessage);
-                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid);
+                        await wbot.presenceSubscribe(msg.key.remoteJid)
+                        //await delay(2000)
+                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                        await delay(typebotDelayMessage)
+                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
+
 
                         await wbot.sendMessage(msg.key.remoteJid, { text: formattedText });
                     }
 
                     if (message.type === 'audio') {
-                        await wbot.presenceSubscribe(msg.key.remoteJid);
-                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid);
-                        await delay(typebotDelayMessage);
-                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid);
+                        await wbot.presenceSubscribe(msg.key.remoteJid)
+                        //await delay(2000)
+                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                        await delay(typebotDelayMessage)
+                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
                         const media = {
                             audio: {
                                 url: message.content.url,
                                 mimetype: 'audio/mp4',
                                 ptt: true
                             },
-                        };
+                        }
                         await wbot.sendMessage(msg.key.remoteJid, media);
+
                     }
 
+                    // if (message.type === 'embed') {
+                    //     await wbot.presenceSubscribe(msg.key.remoteJid)
+                    //     //await delay(2000)
+                    //     await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                    //     await delay(typebotDelayMessage)
+                    //     await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
+                    //     const media = {
+
+                    //         document: { url: message.content.url },
+                    //         mimetype: 'application/pdf',
+                    //         caption: ""
+
+                    //     }
+                    //     await wbot.sendMessage(msg.key.remoteJid, media);
+                    // }
+
                     if (message.type === 'image') {
-                        await wbot.presenceSubscribe(msg.key.remoteJid);
-                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid);
-                        await delay(typebotDelayMessage);
-                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid);
+                        await wbot.presenceSubscribe(msg.key.remoteJid)
+                        //await delay(2000)
+                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                        await delay(typebotDelayMessage)
+                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
                         const media = {
                             image: {
                                 url: message.content.url,
                             },
-                        };
+
+                        }
                         await wbot.sendMessage(msg.key.remoteJid, media);
                     }
+
+                    // if (message.type === 'video' ) {
+                    //     await wbot.presenceSubscribe(msg.key.remoteJid)
+                    //     //await delay(2000)
+                    //     await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                    //     await delay(typebotDelayMessage)
+                    //     await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
+                    //     const media = {
+                    //         video: {
+                    //             url: message.content.url,
+                    //         },
+
+                    //     }
+                    //     await wbot.sendMessage(msg.key.remoteJid, media);
+                    // }
                 }
                 if (input) {
                     if (input.type === 'choice input') {
@@ -318,36 +365,39 @@ const typebotListener = async ({
                             formattedText += `▶️ ${item.content}\n`;
                         }
                         formattedText = formattedText.replace(/\n$/, '');
-                        await wbot.presenceSubscribe(msg.key.remoteJid);
-                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid);
-                        await delay(typebotDelayMessage);
-                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid);
+                        await wbot.presenceSubscribe(msg.key.remoteJid)
+                        //await delay(2000)
+                        await wbot.sendPresenceUpdate('composing', msg.key.remoteJid)
+                        await delay(typebotDelayMessage)
+                        await wbot.sendPresenceUpdate('paused', msg.key.remoteJid)
                         await wbot.sendMessage(msg.key.remoteJid, { text: formattedText });
+
                     }
                 }
             }
         }
-
         if (body === typebotKeywordRestart) {
             await ticket.update({
                 isBot: true,
                 typebotSessionId: null
-            });
+
+            })
 
             await ticket.reload();
-            await wbot.sendMessage(`${number}@c.us`, { text: typebotRestartMessage });
-        }
 
+            await wbot.sendMessage(`${number}@c.us`, { text: typebotRestartMessage })
+
+        }
         if (body === typebotKeywordFinish) {
             await UpdateTicketService({
                 ticketData: {
                     status: "closed",
                     useIntegration: false,
-                    integrationId: null
+                    integrationId: null                   
                 },
                 ticketId: ticket.id,
                 companyId: ticket.companyId
-            });
+            })
 
             return;
         }
@@ -355,7 +405,7 @@ const typebotListener = async ({
         logger.info("Error on typebotListener: ", error);
         await ticket.update({
             typebotSessionId: null
-        });
+        })
         throw error;
     }
 }

@@ -20,28 +20,18 @@ import { i18n } from "../../translate/i18n";
 import ButtonWithSpinner from '../ButtonWithSpinner';
 
 import useTicketNotes from '../../hooks/useTicketNotes';
+import { Divider } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        '& .MuiTextField-root': {
-            margin: theme.spacing(1),
-            width: '350px',
-        },
-    },
     list: {
-        width: '100%',
-        maxWidth: '350px',
-        maxHeight: '200px',
         backgroundColor: theme.palette.background.paper,
     },
-    inline: {
-        width: '100%'
-    }
 }));
 
 const NoteSchema = Yup.object().shape({
 	note: Yup.string()
 		.min(2, "Too Short!")
+        .max(254, "Too long!")
 		.required("Required")
 });
 
@@ -129,13 +119,17 @@ export default function ContactNotesDialog ({ modalOpen, onClose, ticket }) {
     }
 
     const renderNoteList = () => {
-        return notes.map((note) => {
-            return <ContactNotesDialogListItem 
-                note={note} 
-                key={note.id}
-                deleteItem={handleOpenDialogDelete}
-            />
-        })
+        return notes.map((note, index) => {
+            return (
+                <>
+                <ContactNotesDialogListItem 
+                    note={note} 
+                    key={note.id}
+                    deleteItem={handleOpenDialogDelete}
+                />
+                {index < notes.length - 1 && <Divider />}
+                </>
+            )})
     }
 
     return (
@@ -149,6 +143,9 @@ export default function ContactNotesDialog ({ modalOpen, onClose, ticket }) {
                 Deseja realmente excluir este registro?
             </ConfirmationModal>
             <Dialog
+                maxWidth="md"
+                fullWidth
+                className={classes.dialog}
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
@@ -183,6 +180,7 @@ export default function ContactNotesDialog ({ modalOpen, onClose, ticket }) {
                                     helperText={touched.note && errors.note}
                                     variant="outlined"
                                     onChange={handleChangeComment}
+                                    fullWidth
                                 />
 
                                 <List className={classes.list}>

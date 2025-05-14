@@ -27,13 +27,14 @@ import RecordingTimer from "./RecordingTimer";
 import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessageContext";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { ForwardMessageContext } from "../../context/ForwarMessage/ForwardMessageContext";
 import toastError from "../../errors/toastError";
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
 
 const useStyles = makeStyles(theme => ({
 	mainWrapper: {
-		backgroundColor: theme.palette.bordabox, //DARK MODE PLW DESIGN//
+		backgroundColor: theme.palette.bordabox, //DARK MODE//
 		display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
@@ -198,6 +199,12 @@ const MessageInput = ({ ticketStatus }) => {
 		setInputMessage(e.target.value);
 	};
 
+	const {
+		selectedMessages,
+		setForwardMessageModalOpen,
+		showSelectMessageCheckbox } = useContext(ForwardMessageContext);
+	
+
 	const handleAddEmoji = e => {
 		let emoji = e.native;
 		setInputMessage(prevState => prevState + emoji);
@@ -211,6 +218,15 @@ const MessageInput = ({ ticketStatus }) => {
 		const selectedMedias = Array.from(e.target.files);
 		setMedias(selectedMedias);
 	};
+
+	const handleOpenModalForward = () => {
+		if (selectedMessages.length === 0) {
+		  setForwardMessageModalOpen(false)
+		  toastError(i18n.t("messagesList.header.notMessage"));
+		  return;
+		}
+		setForwardMessageModalOpen(true);
+	  }
 
 	const handleInputPaste = e => {
 		if (e.clipboardData.files[0]) {
@@ -238,6 +254,8 @@ const MessageInput = ({ ticketStatus }) => {
 		setLoading(false);
 		setMedias([]);
 	};
+
+
 
 	const handleSendMessage = async () => {
 		if (inputMessage.trim() === "") return;
@@ -457,15 +475,18 @@ const MessageInput = ({ ticketStatus }) => {
 							}}
 						/>
 					</div>
-					{inputMessage ? (
-						<IconButton
+					{inputMessage || showSelectMessageCheckbox ? (
+						<>
+						  <IconButton
 							aria-label="sendMessage"
 							component="span"
-							onClick={handleSendMessage}
+							onClick={showSelectMessageCheckbox ? handleOpenModalForward : handleSendMessage}
 							disabled={loading}
-						>
-							<SendIcon className={classes.sendMessageIcons} />
-						</IconButton>
+						  >
+							{showSelectMessageCheckbox ?
+							  <Reply className={classes.ForwardMessageIcons} /> : <Send className={classes.sendMessageIcons} />}
+						  </IconButton>
+						</>
 					) : recording ? (
 						<div className={classes.recorderWrapper}>
 							<IconButton

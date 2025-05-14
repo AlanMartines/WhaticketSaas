@@ -15,5 +15,8 @@ messageRoutes.post("/messages/:ticketId", isAuth, upload.array("medias"), Messag
 messageRoutes.delete("/messages/:messageId", isAuth, MessageController.remove);
 messageRoutes.post("/api/messages/send", tokenAuth, upload.array("medias"), MessageController.send);
 messageRoutes.post("/messages/edit/:messageId", isAuth, MessageController.edit);
+messageRoutes.post('/message/forward', isAuth, MessageController.forwardMessage)
+messageRoutes.post('/messages/:messageId/reactions', isAuth, MessageController.addReaction);
+
 
 export default messageRoutes;

@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function AnnouncementDialog({ announcement, open, handleClose }) {
-  const getMediaPath = (filename) => {
-    return `${process.env.REACT_APP_BACKEND_URL}/public/${filename}`;
-  };
+  // const getMediaPath = (filename) => {
+  //   return path.join(`${process.env.REACT_APP_BACKEND_URL}`,"public", "announcements",`${filename}`);
+  // };
   return (
     <Dialog
       open={open}
@@ -59,12 +59,20 @@ function AnnouncementDialog({ announcement, open, handleClose }) {
               textAlign: "center",
               width: "400px",
               height: 300,
-              backgroundImage: `url(${getMediaPath(announcement.mediaPath)})`,
               backgroundRepeat: "no-repeat",
               backgroundSize: "contain",
               backgroundPosition: "center",
             }}
-          ></div>
+          >
+		    <img
+              alt={`announcement image`}
+              src={announcement.mediaPath}
+              style={{
+                width: "95%",
+                height: "100%",
+              }}
+            />
+		  </div>
         )}
         <DialogContentText id="alert-dialog-description">
           {announcement.text}
@@ -224,9 +232,9 @@ export default function AnnouncementsPopover() {
     }
   };
 
-  const getMediaPath = (filename) => {
+  {/* const getMediaPath = (filename) => {
     return `${process.env.REACT_APP_BACKEND_URL}/public/${filename}`;
-  };
+  };*/}
 
   const handleShowAnnouncementDialog = (record) => {
     setAnnouncement(record);
@@ -297,8 +305,7 @@ export default function AnnouncementsPopover() {
                   {item.mediaPath && (
                     <ListItemAvatar>
                       <Avatar
-                        alt={item.mediaName}
-                        src={getMediaPath(item.mediaPath)}
+                        src={item.mediaPath}
                       />
                     </ListItemAvatar>
                   )}

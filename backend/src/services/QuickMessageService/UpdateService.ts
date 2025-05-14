@@ -6,10 +6,11 @@ interface Data {
   message: string;
   userId: number | string;
   id?: number | string;
+  geral?: boolean;
 }
 
 const UpdateService = async (data: Data): Promise<QuickMessage> => {
-  const { id, shortcode, message, userId } = data;
+  const { id, shortcode, message, userId, geral } = data;
 
   const record = await QuickMessage.findByPk(id);
 
@@ -20,7 +21,8 @@ const UpdateService = async (data: Data): Promise<QuickMessage> => {
   await record.update({
     shortcode,
     message,
-    userId
+    userId,
+	geral
   });
 
   return record;

@@ -4,8 +4,10 @@ import sequelize from "../../database";
 type Result = {
   id: number;
   currentSchedule: [];
-  startTime: string;
-  endTime: string;
+  startTimeA: string;
+  endTimeA: string;
+  startTimeB: string | null;
+  endTimeB: string | null;
   inActivity: boolean;
 };
 
@@ -15,12 +17,16 @@ const VerifyCurrentSchedule = async (id: string | number): Promise<Result> => {
       s.id,
       s.currentWeekday,
       s.currentSchedule,
-        (s.currentSchedule->>'startTime')::time "startTime",
-        (s.currentSchedule->>'endTime')::time "endTime",
-        (
-          now()::time >= (s.currentSchedule->>'startTime')::time and
-          now()::time <= (s.currentSchedule->>'endTime')::time
-        ) "inActivity"
+      (s.currentSchedule->>'startTimeA')::time "startTimeA",
+      (s.currentSchedule->>'endTimeA')::time "endTimeA",
+      coalesce(nullif((s.currentSchedule->>'startTimeB'), ''), '00:00')::time "startTimeB",
+      coalesce(nullif((s.currentSchedule->>'endTimeB'), ''), '00:00')::time "endTimeB",
+      (
+        now()::time >= (s.currentSchedule->>'startTimeA')::time and
+        now()::time <= (s.currentSchedule->>'endTimeA')::time or
+        now()::time >= coalesce(nullif((s.currentSchedule->>'startTimeB'), ''), '00:00')::time and
+        now()::time <= coalesce(nullif((s.currentSchedule->>'endTimeB'), ''), '00:00')::time
+      ) "inActivity"
     from (
       SELECT
             c.id,
@@ -30,7 +36,10 @@ const VerifyCurrentSchedule = async (id: string | number): Promise<Result> => {
       WHERE s->>'weekdayEn' like trim(to_char(current_date, 'day')) and c.id = :id
       GROUP BY 1, 2
     ) s
-    where s.currentSchedule->>'startTime' not like '' and s.currentSchedule->>'endTime' not like '';
+    where s.currentSchedule->>'startTimeA' not like '' and
+      s.currentSchedule->>'endTimeA' not like '' or
+      coalesce(nullif(s.currentSchedule->>'startTimeB', ''), '00:00') not like '' and
+      coalesce(nullif(s.currentSchedule->>'endTimeB', ''), '00:00') not like '';
   `;
 
   const result: Result = await sequelize.query(sql, {

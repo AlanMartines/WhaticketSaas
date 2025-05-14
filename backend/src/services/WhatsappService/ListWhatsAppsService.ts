@@ -1,4 +1,3 @@
-/*
 import { FindOptions } from "sequelize/types";
 import Queue from "../../models/Queue";
 import Whatsapp from "../../models/Whatsapp";
@@ -24,44 +23,6 @@ const ListWhatsAppsService = async ({
       }
     ]
   };
-
-  if (session !== undefined && session == 0) {
-    options.attributes = { exclude: ["session"] };
-  }
-
-  const whatsapps = await Whatsapp.findAll(options);
-
-  return whatsapps;
-};
-
-export default ListWhatsAppsService;
-*/
-import { FindOptions } from "sequelize/types";
-import Queue from "../../models/Queue";
-import Whatsapp from "../../models/Whatsapp";
-
-interface Request {
-  companyId?: number; // agora opcional
-  session?: number | string;
-}
-
-const ListWhatsAppsService = async ({
-  session,
-  companyId
-}: Request): Promise<Whatsapp[]> => {
-  const options: FindOptions = {
-    include: [
-      {
-        model: Queue,
-        as: "queues",
-        attributes: ["id", "name", "color", "greetingMessage"]
-      }
-    ]
-  };
-
-  if (companyId) {
-    options.where = { companyId };
-  }
 
   if (session !== undefined && session == 0) {
     options.attributes = { exclude: ["session"] };

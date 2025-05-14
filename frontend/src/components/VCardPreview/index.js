@@ -8,13 +8,13 @@ import Grid from "@material-ui/core/Grid";
 import Modal from "@material-ui/core/Modal";
 import { AuthContext } from "../../context/Auth/AuthContext";
 import { Button, Divider, } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles"; // Importar useTheme
 import NewTicketModal from "../NewTicketModal";
-
-
 
 const VCardPreview = ({ contact, numbers }) => {
     const history = useHistory();
     const { user } = useContext(AuthContext);
+    const theme = useTheme(); // Usar o hook useTheme para acessar o tema
 
     const [selectedContact, setContact] = useState({
         name: "",
@@ -44,7 +44,7 @@ const VCardPreview = ({ contact, numbers }) => {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)",
-                    backgroundColor: "#FFF",
+                    backgroundColor: theme.palette.background.paper,
                     padding: "20px",
                     outline: "none",
                 }}>
@@ -60,7 +60,6 @@ const VCardPreview = ({ contact, numbers }) => {
             </Modal>
         );
     };
-
 
     useEffect(() => {
         const fetchContacts = async () => {
@@ -80,21 +79,9 @@ const VCardPreview = ({ contact, numbers }) => {
                 }
             
             	if(data.invalido){
-                
-                	//console.log("CONTATO INVALIDOOOOO");
-                	//console.log(data.error);
-                	// SHOULD RETURN ANOTHER VIEW
-                	// Update the button text and disable the button
         			setContactValid(false);
-                
                 }
-
-                //console.log("XXXXXXXXXXXXXXXX");
-                //console.log(data);
-                //console.log(contactObj);
-
             } catch (err) {
-                //console.log(err);
                 toastError(err);
             }
         };
@@ -111,41 +98,35 @@ const VCardPreview = ({ contact, numbers }) => {
     	}
 	};
 
-const createTicket = async (queueId) => {
-    try {
-        let contactId = selectedContact.id;
+    const createTicket = async (queueId) => {
+        try {
+            let contactId = selectedContact.id;
 
-        // If selectedContact.id is null, fetch the contact ID from the server
-        if (!contactId) {
-            const contactObj = {
-                name: selectedContact.name,
-                number: selectedContact.number,
-                email: ""
-            };
+            if (!contactId) {
+                const contactObj = {
+                    name: selectedContact.name,
+                    number: selectedContact.number,
+                    email: ""
+                };
 
-            const { data } = await api.post("/contacts", contactObj);
-            contactId = data.existingContact.id;
+                const { data } = await api.post("/contacts", contactObj);
+                contactId = data.existingContact.id;
+            }
+
+            const { data: ticket } = await api.post("/tickets", {
+                contactId,
+                queueId,
+                userId: user.id,
+                status: "open",
+            });
+            
+            history.push(`/tickets/${ticket.uuid}`);
+        } catch (err) {
+            toastError(err);
         }
-    
-    	//console.log(contactId);
+    };
 
-        const { data: ticket } = await api.post("/tickets", {
-            contactId,
-            queueId,
-            userId: user.id,
-            status: "open",
-        });
-        
-        //console.log(user);
-        // console.log(selectedContact.id);
-        // console.log(ticket.id);
-        history.push(`/tickets/${ticket.uuid}`);
-    } catch (err) {
-        toastError(err);
-    }
-};
-
-const handleCloseOrOpenTicket = (ticket) => {
+    const handleCloseOrOpenTicket = (ticket) => {
         setNewTicketModalOpen(false);
         if (ticket !== undefined && ticket.uuid !== undefined) {
             history.push(`/tickets/${ticket.uuid}`);
@@ -170,33 +151,32 @@ const handleCloseOrOpenTicket = (ticket) => {
                         <Avatar src={selectedContact.profilePicUrl} />
                     </Grid>
                     <Grid item xs={9}>
-                        <Typography style={{ marginTop: "12px", marginLeft: "10px" }} variant="subtitle1" color="primary" gutterBottom>
+                        <Typography style={{ marginTop: "12px", marginLeft: "10px", color: theme.palette.text.vcard }} variant="subtitle1" gutterBottom>
                             {selectedContact.name}
                         </Typography>
                     </Grid>
-			<Grid item xs={9}>                
-                <Typography style={{ marginLeft: "10px" }} variant="body2" color="textSecondary" gutterBottom>
-                    <strong>Nome:</strong> {selectedContact.name}
-                </Typography>
-                <Typography style={{ marginLeft: "10px" }} variant="body2" color="textSecondary" gutterBottom>
-                    <Typography variant="body2" color="textSecondary" component="span">
-                        <strong>Telefone:</strong> {selectedContact.number}
-                    </Typography>
-                </Typography>
-            </Grid>
+					<Grid item xs={9}>
+                        <Typography style={{ marginLeft: "10px", color: theme.palette.text.vcard }} variant="body2" gutterBottom>
+                            <strong>Nome:</strong> {selectedContact.name}
+                        </Typography>
+                        <Typography style={{ marginLeft: "10px", color: theme.palette.text.vcard }} variant="body2" gutterBottom>
+                            <Typography variant="body2" component="span">
+                                <strong>Telefone:</strong> {selectedContact.number}
+                            </Typography>
+                        </Typography>
+                    </Grid>
                     <Grid item xs={12}>
                         <Divider />
                         <Button
-   							fullWidth
-                            color="primary"
+                            fullWidth
+                            color="theme.palette.text.vcard"
                             onClick={() => {
-                                                setContactTicket(selectedContact);
-                                                setNewTicketModalOpen(true);
-                                            }}
+                                setContactTicket(selectedContact);
+                                setNewTicketModalOpen(true);
+                            }}
                             disabled={!selectedContact.number || !isContactValid}
                         >
-                        {isContactValid ? "Conversar (Novo Ticket)" : "CONTATO FORA DO WHATSAPP"}
-
+                            {isContactValid  ? "Conversar (Novo Ticket)" : "CONTATO FORA DO WHATSAPP"}
                         </Button>
                     </Grid>
                 </Grid>

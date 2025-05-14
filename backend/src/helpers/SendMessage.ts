@@ -23,12 +23,12 @@ export const SendMessage = async (
 
     if (messageData.mediaPath) {
       const options = await getMessageOptions(
-        messageData.fileName,
+        messageData.fileName || "file",
         messageData.mediaPath,
-        messageData.body
+        whatsapp.companyId.toString(),
+        messageData.body // Passando o body explicitamente para garantir que o texto seja incluído
       );
       if (options) {
-        const body = fs.readFileSync(messageData.mediaPath);
         message = await wbot.sendMessage(chatId, {
           ...options
         });

@@ -7,6 +7,7 @@ import DeleteTicketService from "../services/TicketServices/DeleteTicketService"
 import ListTicketsService from "../services/TicketServices/ListTicketsService";
 import ShowTicketUUIDService from "../services/TicketServices/ShowTicketFromUUIDService";
 import ShowTicketService from "../services/TicketServices/ShowTicketService";
+import ListTicketsServiceReport from "../services/TicketServices/ListTicketsServiceReport";
 import UpdateTicketService from "../services/TicketServices/UpdateTicketService";
 import ListTicketsServiceKanban from "../services/TicketServices/ListTicketsServiceKanban";
 
@@ -33,6 +34,21 @@ interface TicketData {
   promptId: number;
   integrationId: number;
 }
+
+type IndexQueryReport = {
+  searchParam: string;
+  contactId: string;
+  whatsappId: string;
+  dateFrom: string;
+  dateTo: string;
+  status: string;
+  //lastMessage: string;
+  queueIds: string;
+  tags: string;
+  users: string;
+  page: string;
+  pageSize: string;
+};
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
   const {
@@ -221,3 +237,108 @@ export const remove = async (
 
   return res.status(200).json({ message: "ticket deleted" });
 };
+
+
+export const report = async (req: Request, res: Response): Promise<Response> => {
+  const {
+    searchParam,
+    contactId,
+    whatsappId: whatsappIdsStringified,
+    dateFrom,
+    dateTo,
+    status: statusStringified,
+	//lastMessage,
+    queueIds: queueIdsStringified,
+    tags: tagIdsStringified,
+    users: userIdsStringified,
+    page: pageNumber,
+    pageSize
+  } = req.query as IndexQueryReport;
+
+  const userId = req.user.id;
+  const { companyId } = req.user;
+
+  let queueIds: number[] = [];
+  let whatsappIds: string[] = [];
+  let tagsIds: number[] = [];
+  let usersIds: number[] = [];
+  let statusIds: string[] = [];
+
+
+  if (statusStringified) {
+    statusIds = JSON.parse(statusStringified);
+  }
+
+  if (whatsappIdsStringified) {
+    whatsappIds = JSON.parse(whatsappIdsStringified);
+  }
+
+  if (queueIdsStringified) {
+    queueIds = JSON.parse(queueIdsStringified);
+  }
+
+  if (tagIdsStringified) {
+    tagsIds = JSON.parse(tagIdsStringified);
+  }
+
+  if (userIdsStringified) {
+    usersIds = JSON.parse(userIdsStringified);
+  }
+
+  const { tickets, totalTickets } = await ListTicketsServiceReport(
+    companyId,
+    {
+      searchParam,
+      queueIds,
+      tags: tagsIds,
+      users: usersIds,
+      status: statusIds,
+      dateFrom,
+      dateTo,
+      userId,
+      contactId,
+      whatsappId: whatsappIds
+    },
+    +pageNumber,
+    +pageSize
+  );
+
+  return res.status(200).json({ tickets, totalTickets });
+};
+
+export const closeAll = async (req: Request, res: Response): Promise<Response> => {
+  const { companyId } = req.user;
+  const { status }: TicketData = req.body;
+  const io = getIO();
+
+  const { rows: tickets } = await Ticket.findAndCountAll({
+    where: { companyId: companyId, status: status },
+    order: [["updatedAt", "DESC"]]
+  });
+
+  tickets.forEach(async ticket => {
+
+    await ticket.update({
+      status: "closed",
+      useIntegration: false,
+      promptId: null,
+      integrationId: null,
+      unreadMessages: 0
+    })
+
+    const io = getIO();
+    io.to(`${ticket.id}`)
+      .to(`company-${companyId}-${ticket.status}`)
+      .to(`company-${companyId}-notification`)
+      .to(`queue-${ticket.queueId}-${ticket.status}`)
+      .to(`queue-${ticket.queueId}-notification`)
+      .emit(`company-${companyId}-ticket`, {
+        action: "delete",
+        ticketId: ticket.id
+      });
+
+  });
+
+  return res.status(200).json();
+};
+

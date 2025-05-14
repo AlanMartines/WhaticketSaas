@@ -10,16 +10,18 @@ import {
 } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import whatsBackground from "../../assets/wa-background.png";
 import { makeStyles } from "@material-ui/core";
 import MarkdownWrapper from "../MarkdownWrapper";
 import MoodIcon from "@material-ui/icons/Mood";
 import api from "../../services/api";
-
+import whatsBackgroundDark from "../../assets/wa-background-dark.png"
 
 const useStyles = makeStyles((theme) => ({
   messagesList: {
     backgroundSize: "370px",
-    backgroundImage: theme.backgroundImage,
+    backgroundImage: theme.mode === 'light' ? `url(${whatsBackground})` : `url(${whatsBackgroundDark})`, //DARK MODE//
+    display: "flex",
     display: "flex",
     justifyContent: "center",
     flexGrow: 1,

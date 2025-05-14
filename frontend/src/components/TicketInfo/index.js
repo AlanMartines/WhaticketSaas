@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { Avatar, CardHeader } from "@material-ui/core";
-
+import { getInitials } from "../../helpers/getInitials";
+import { generateColor } from "../../helpers/colorGenerator";
 import { i18n } from "../../translate/i18n";
 
 const TicketInfo = ({ contact, ticket, onClick }) => {
@@ -36,7 +37,12 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 			style={{ cursor: "pointer" }}
 			titleTypographyProps={{ noWrap: true }}
 			subheaderTypographyProps={{ noWrap: true }}
-			avatar={<Avatar src={contact.profilePicUrl} alt="contact_image" />}
+			avatar={        <Avatar
+          style={{ backgroundColor: generateColor(contact?.number), color: "white", fontWeight: "bold" }}
+          src={contact.profilePicUrl}
+          alt="contact_image">
+          {getInitials(contact?.name)}
+        </Avatar>}
 			title={`${contactName} #${ticket.id}`}
 			subheader={ticket.user && `${userName}`}
 		/>

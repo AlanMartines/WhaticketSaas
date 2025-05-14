@@ -2,6 +2,7 @@ import * as Yup from "yup";
 import { Request, Response } from "express";
 import { getIO } from "../libs/socket";
 
+import Contact from "../models/Contact";
 import ListContactsService from "../services/ContactServices/ListContactsService";
 import CreateContactService from "../services/ContactServices/CreateContactService";
 import ShowContactService from "../services/ContactServices/ShowContactService";
@@ -10,7 +11,6 @@ import DeleteContactService from "../services/ContactServices/DeleteContactServi
 import GetContactService from "../services/ContactServices/GetContactService";
 
 import CheckContactNumber from "../services/WbotServices/CheckNumber";
-import checkGroup from "../services/WbotServices/CheckGroup";
 import CheckIsValidContact from "../services/WbotServices/CheckIsValidContact";
 import GetProfilePicUrl from "../services/WbotServices/GetProfilePicUrl";
 import AppError from "../errors/AppError";
@@ -90,15 +90,22 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
   }
 
   await CheckIsValidContact(newContact.number, companyId);
-  // const validNumber = await CheckContactNumber(newContact.number, companyId);
-  // const number = validNumber.jid.replace(/\D/g, "");
-  // newContact.number = number;
-	const validGroup = await checkGroup(newContact.number);
-	if(!validGroup){
-		const validNumber = await CheckContactNumber(newContact.number, companyId);
-		const number = validNumber.jid.replace(/\D/g, "");
-		newContact.number = number;
-	}
+  const validNumber = await CheckContactNumber(newContact.number, companyId);
+  const number = validNumber.jid.replace(/\D/g, "");
+  newContact.number = number;
+
+    // Check if the contact already exists
+    const existingContact = await Contact.findOne({
+      where: {
+        number: newContact.number,
+        companyId
+      }
+    });
+    
+    if (existingContact) {
+      // Contact already exists, send the existing contact data as the response
+      return res.status(200).json({ alreadyExists: true, existingContact });
+    }
 
   /**
    * Código desabilitado por demora no retorno
@@ -151,15 +158,9 @@ export const update = async (
   }
 
   await CheckIsValidContact(contactData.number, companyId);
-  // const validNumber = await CheckContactNumber(contactData.number, companyId);
-  // const number = validNumber.jid.replace(/\D/g, "");
-  // contactData.number = number;
-	const validGroup = await checkGroup(contactData.number);
-	if(!validGroup){
-		const validNumber = await CheckContactNumber(contactData.number, companyId);
-		const number = validNumber.jid.replace(/\D/g, "");
-		contactData.number = number;
-	}
+  const validNumber = await CheckContactNumber(contactData.number, companyId);
+  const number = validNumber.jid.replace(/\D/g, "");
+  contactData.number = number;
 
   const { contactId } = req.params;
 
