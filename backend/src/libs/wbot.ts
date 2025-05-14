@@ -158,7 +158,6 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					/** Versão para conectar */
 					version: version,
 					/** Configuração do navegador */
-					//browser: [String(BROWSER_CLIENT), String(BROWSER_NAME), String(release())],
 					browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
 					/** Agente usado para solicitações de busca - carregamento/download de mídia */
 					fetchAgent: undefined,
