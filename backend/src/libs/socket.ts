@@ -12,12 +12,11 @@ import { CounterManager } from "./counter";
 let io: SocketIO;
 
 export const initIO = (httpServer: Server): SocketIO => {
-  const allowedDomains = process.env.ALLOWED_DOMAINS?.split(',') || [];
-	io = new SocketIO(httpServer, {
-		cors: {
-			origin: allowedDomains
-		}
-	});
+  io = new SocketIO(httpServer, {
+    cors: {
+      origin: process.env.FRONTEND_URL
+    }
+  });
 
   io.on("connection", async socket => {
     logger.info("Client Connected");

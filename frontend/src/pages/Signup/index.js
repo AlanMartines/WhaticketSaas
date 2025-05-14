@@ -7,49 +7,45 @@ import { Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
 import usePlans from "../../hooks/usePlans";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 import InputMask from 'react-input-mask';
 import api from "../../services/api";
 import {
 	FormControl,
-	Avatar,
-	useTheme,
-	Button,
-	CssBaseline,
-	TextField,
-	Link,
-	Grid,
-	Box,
-	Container,
-	Typography,
-	MenuItem,
 	InputLabel,
+	MenuItem,
 	Select,
-	makeStyles,
-	Tooltip
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles, useTheme } from "@material-ui/core/styles";  // Added useTheme
+import Container from "@material-ui/core/Container";
 import { i18n } from "../../translate/i18n";
 
 import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import moment from "moment";
 
-//import logo from "../../assets/logo.png";
-import logoDefault from "../../assets/logo.png";
-const logo = process.env.REACT_APP_LOGO || logoDefault;
+const Copyright = () => {
+	return (
+		<Typography variant="body2" color="textSecondary" align="center">
+			{"Copyright © "}
+			<Link color="inherit" href="#">
+				Whaticket Saas
+			</Link>{" "}
+		   {new Date().getFullYear()}
+			{"."}
+		</Typography>
+	);
+};
 
-const Copyright = () => (
-	<Typography variant="body2" color="textSecondary" align="center">
-		{"Copyright © "}
-		<Link color="inherit" href="#">
-			Whaticket Saas
-		</Link>{" "}
-		{new Date().getFullYear()}
-		{"."}
-	</Typography>
-);
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
 	paper: {
 		marginTop: theme.spacing(8),
 		display: "flex",
@@ -67,18 +63,15 @@ const useStyles = makeStyles((theme) => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
-	logo: {
-		margin: "0 auto",
-		height: "80px",
-		width: "100%",
-	},
 }));
 
 const UserSchema = Yup.object().shape({
-	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
-	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
-	phone: Yup.string().required("Obrigatório"),
-	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	name: Yup.string()
+		.min(2, "Too Short!")
+		.max(50, "Too Long!")
+		.required("Required"),
+	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
+	email: Yup.string().email("Invalid email").required("Required"),
 });
 
 const SignUp = () => {
@@ -86,45 +79,45 @@ const SignUp = () => {
 	const history = useHistory();
 	const theme = useTheme();  // Added to access theme
 	const [allowregister, setallowregister] = useState('enabled');
-	const [trial, settrial] = useState('3');
-
+    const [trial, settrial] = useState('3');
+	
 	const logoLight = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
 	const logoDark = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`;
 
 	// Use theme.palette.type to set the initial logo based on light or dark mode
 	const initialLogo = theme.palette.type === 'light' ? logoLight : logoDark;
 	const [logoImg, setLogoImg] = useState(initialLogo);
-
+	
 	let companyId = null;
 
 	useEffect(() => {
-		fetchallowregister();
-		fetchtrial();
-	}, []);
+        fetchallowregister();
+        fetchtrial();
+    }, []);
 
-	const fetchtrial = async () => {
-		try {
-			const responsevvv = await api.get("/settings/trial");
-			const allowtrialX = responsevvv.data.value;
-			settrial(allowtrialX);
-		} catch (error) {
-			console.error('Error retrieving trial', error);
-		}
-	};
+    const fetchtrial = async () => {
+        try {
+            const responsevvv = await api.get("/settings/trial");
+            const allowtrialX = responsevvv.data.value;
+            settrial(allowtrialX);
+        } catch (error) {
+            console.error('Error retrieving trial', error);
+        }
+    };
 
-	const fetchallowregister = async () => {
-		try {
-			const responsevv = await api.get("/settings/allowregister");
-			const allowregisterX = responsevv.data.value;
-			setallowregister(allowregisterX);
-		} catch (error) {
-			console.error('Error retrieving allowregister', error);
-		}
-	};
+    const fetchallowregister = async () => {
+        try {
+            const responsevv = await api.get("/settings/allowregister");
+            const allowregisterX = responsevv.data.value;
+            setallowregister(allowregisterX);
+        } catch (error) {
+            console.error('Error retrieving allowregister', error);
+        }
+    };
 
-	if (allowregister === "disabled") {
-		history.push("/login");
-	}
+    if(allowregister === "disabled"){
+    	history.push("/login");    
+    }
 
 	const params = qs.parse(window.location.search);
 	if (params.companyId !== undefined) {
@@ -167,7 +160,7 @@ const SignUp = () => {
 			<CssBaseline />
 			<div className={classes.paper}>
 				<div>
-					<img src={`${logoImg}?r=${Math.random()}`} style={{ margin: "0 auto", width: "50%" }} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+				<img src={`${logoImg}?r=${Math.random()}`} style={{ margin: "0 auto" , width: "50%"}} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
 				</div>
 				<Formik
 					initialValues={user}
@@ -211,7 +204,7 @@ const SignUp = () => {
 										required
 									/>
 								</Grid>
-
+								
 								<Grid item xs={12}>
 									<Field
 										as={InputMask}
@@ -236,7 +229,7 @@ const SignUp = () => {
 										)}
 									</Field>
 								</Grid>
-
+								
 								<Grid item xs={12}>
 									<Field
 										as={TextField}
@@ -257,49 +250,21 @@ const SignUp = () => {
 									<InputLabel htmlFor="plan-selection">Plano</InputLabel>
 									<Field
 										as={Select}
-										name="planId"
 										variant="outlined"
 										fullWidth
 										id="plan-selection"
+										label="Plano"
+										name="planId"
+										required
 									>
-										{plans
-											.sort((a, b) => {
-												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
-												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
-
-												if (numA !== numB) {
-													return numA - numB;
-												}
-
-												return a.name.localeCompare(b.name);
-											})
-											.map((plan) => (
-												<MenuItem key={plan.id} value={plan.id}>
-													<div style={{ display: "flex", flexDirection: "column" }}>
-														<Typography variant="body1" style={{ fontWeight: "bold" }}>
-															{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
-														</Typography>
-														<Tooltip
-															title={
-																<div>
-																	<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
-																	<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
-																	<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
-																	<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
-																	<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
-																	<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
-																	<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
-																</div>
-															}
-															arrow
-														>
-															<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
-																Passe o mouse para ver os recursos
-															</Typography>
-														</Tooltip>
-													</div>
-												</MenuItem>
-											))}
+                                        <MenuItem value="disabled" disabled>
+                                        	<em>Selecione seu plano de assinatura</em>
+										</MenuItem>
+										{plans.map((plan, key) => (
+											<MenuItem key={key} value={plan.id}>
+										        {plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+											</MenuItem>
+										))}
 									</Field>
 								</Grid>
 							</Grid>
