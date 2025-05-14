@@ -158,7 +158,7 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					/** Versão para conectar */
 					version: version,
 					/** Configuração do navegador */
-					browser: [`${BROWSER_CLIENT}`, `${BROWSER_NAME}`, release()],
+					browser: [String(BROWSER_CLIENT), String(BROWSER_NAME), String(release())],
 					/** Agente usado para solicitações de busca - carregamento/download de mídia */
 					fetchAgent: undefined,
 					/** Deve o QR ser impresso no terminal */
