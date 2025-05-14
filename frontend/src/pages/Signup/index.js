@@ -32,18 +32,16 @@ import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
 import moment from "moment";
 
-const Copyright = () => {
-	return (
-		<Typography variant="body2" color="textSecondary" align="center">
-			{"Copyright © "}
-			<Link color="inherit" href="#">
-				Whaticket Saas
-			</Link>{" "}
-		   {new Date().getFullYear()}
-			{"."}
-		</Typography>
-	);
-};
+const Copyright = () => (
+	<Typography variant="body2" color="textSecondary" align="center">
+		{"Copyright © "}
+		<Link color="inherit" href="#">
+			Whaticket Saas
+		</Link>{" "}
+		{new Date().getFullYear()}
+		{"."}
+	</Typography>
+);
 
 const useStyles = makeStyles(theme => ({
 	paper: {
@@ -66,12 +64,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UserSchema = Yup.object().shape({
-	name: Yup.string()
-		.min(2, "Too Short!")
-		.max(50, "Too Long!")
-		.required("Required"),
-	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
-	email: Yup.string().email("Invalid email").required("Required"),
+	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
+	//phone: Yup.string().required("Obrigatório"),
+	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 });
 
 const SignUp = () => {
@@ -79,45 +75,45 @@ const SignUp = () => {
 	const history = useHistory();
 	const theme = useTheme();  // Added to access theme
 	const [allowregister, setallowregister] = useState('enabled');
-    const [trial, settrial] = useState('3');
-	
+	const [trial, settrial] = useState('3');
+
 	const logoLight = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
 	const logoDark = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`;
 
 	// Use theme.palette.type to set the initial logo based on light or dark mode
 	const initialLogo = theme.palette.type === 'light' ? logoLight : logoDark;
 	const [logoImg, setLogoImg] = useState(initialLogo);
-	
+
 	let companyId = null;
 
 	useEffect(() => {
-        fetchallowregister();
-        fetchtrial();
-    }, []);
+		fetchallowregister();
+		fetchtrial();
+	}, []);
 
-    const fetchtrial = async () => {
-        try {
-            const responsevvv = await api.get("/settings/trial");
-            const allowtrialX = responsevvv.data.value;
-            settrial(allowtrialX);
-        } catch (error) {
-            console.error('Error retrieving trial', error);
-        }
-    };
+	const fetchtrial = async () => {
+		try {
+			const responsevvv = await api.get("/settings/trial");
+			const allowtrialX = responsevvv.data.value;
+			settrial(allowtrialX);
+		} catch (error) {
+			console.error('Error retrieving trial', error);
+		}
+	};
 
-    const fetchallowregister = async () => {
-        try {
-            const responsevv = await api.get("/settings/allowregister");
-            const allowregisterX = responsevv.data.value;
-            setallowregister(allowregisterX);
-        } catch (error) {
-            console.error('Error retrieving allowregister', error);
-        }
-    };
+	const fetchallowregister = async () => {
+		try {
+			const responsevv = await api.get("/settings/allowregister");
+			const allowregisterX = responsevv.data.value;
+			setallowregister(allowregisterX);
+		} catch (error) {
+			console.error('Error retrieving allowregister', error);
+		}
+	};
 
-    if(allowregister === "disabled"){
-    	history.push("/login");    
-    }
+	if (allowregister === "disabled") {
+		history.push("/login");
+	}
 
 	const params = qs.parse(window.location.search);
 	if (params.companyId !== undefined) {
@@ -160,7 +156,7 @@ const SignUp = () => {
 			<CssBaseline />
 			<div className={classes.paper}>
 				<div>
-				<img src={`${logoImg}?r=${Math.random()}`} style={{ margin: "0 auto" , width: "50%"}} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
+					<img src={`${logoImg}?r=${Math.random()}`} style={{ margin: "0 auto", width: "50%" }} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
 				</div>
 				<Formik
 					initialValues={user}
@@ -204,7 +200,7 @@ const SignUp = () => {
 										required
 									/>
 								</Grid>
-								
+
 								<Grid item xs={12}>
 									<Field
 										as={InputMask}
@@ -229,7 +225,7 @@ const SignUp = () => {
 										)}
 									</Field>
 								</Grid>
-								
+
 								<Grid item xs={12}>
 									<Field
 										as={TextField}
@@ -257,12 +253,12 @@ const SignUp = () => {
 										name="planId"
 										required
 									>
-                                        <MenuItem value="disabled" disabled>
-                                        	<em>Selecione seu plano de assinatura</em>
+										<MenuItem value="disabled" disabled>
+											<em>Selecione seu plano de assinatura</em>
 										</MenuItem>
 										{plans.map((plan, key) => (
 											<MenuItem key={key} value={plan.id}>
-										        {plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+												{plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
 											</MenuItem>
 										))}
 									</Field>
