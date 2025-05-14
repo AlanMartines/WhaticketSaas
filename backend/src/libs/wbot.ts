@@ -212,7 +212,7 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
 					// comente a linha abaixo
 					shouldIgnoreJid: jid => isJidBroadcast(jid),
 					/** Por padrão, verdadeiro, as mensagens de histórico devem ser baixadas e processadas */
-					downloadHistory: true,
+					//downloadHistory: true,
 					/**
 					 * Busque uma mensagem em sua loja
 					 * implemente isso para que mensagens com falha no envio (resolve o problema "esta mensagem pode levar um tempo" possam ser reenviadas
