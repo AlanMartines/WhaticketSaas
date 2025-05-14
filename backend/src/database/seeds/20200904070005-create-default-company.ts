@@ -8,6 +8,7 @@ module.exports = {
           "Plans",
           [
             {
+              id: 1,
               name: "Plano Essencial",
               users: 1,
               connections: 1,
@@ -24,6 +25,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 2,
               name: "Plano Avançado",
               users: 3,
               connections: 1,
@@ -40,6 +42,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 3,
               name: "Plano Empresarial",
               users: 5,
               connections: 2,
@@ -56,6 +59,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 4,
               name: "Plano Executivo",
               users: 7,
               connections: 4,
@@ -72,6 +76,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 5,
               name: "Plano Corporativo",
               users: 10,
               connections: 6,
@@ -88,6 +93,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 6,
               name: "Plano Essencial Plus",
               users: 1,
               connections: 1,
@@ -104,6 +110,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 7,
               name: "Plano Avançado Plus",
               users: 3,
               connections: 1,
@@ -120,6 +127,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 8,
               name: "Plano Empresarial Plus",
               users: 5,
               connections: 2,
@@ -136,6 +144,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 9,
               name: "Plano Executivo Plus",
               users: 7,
               connections: 4,
@@ -152,6 +161,7 @@ module.exports = {
               updatedAt: new Date()
             },
             {
+							id: 10,
               name: "Plano Corporativo Plus",
               users: 10,
               connections: 6,
@@ -175,7 +185,7 @@ module.exports = {
           [
             {
               name: "Empresa 1",
-              planId: 1,
+              planId: 10,
               dueDate: "3000-01-01 04:00:00+01",
               createdAt: new Date(),
               updatedAt: new Date()
