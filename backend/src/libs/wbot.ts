@@ -36,6 +36,7 @@ import makeWASocket, {
   encodeWAM,
   getHistoryMsg,
   isJidNewsletter,
+  jidNormalizedUser,
 } from "@whiskeysockets/baileys";
 import { release } from "os";
 import { Op } from "sequelize";
@@ -377,10 +378,7 @@ export const initWASocket = async (whatsapp: Whatsapp): Promise<Session> => {
                 qrcode: "",
                 retries: 0,
                 number:
-                  wsocket.type === "md"
-                    ? jidNormalizedUser((wsocket as WASocket).user.id).split("@")[0]
-                    : "-"
-              });
+                  wsocket.type === "md" ? jidNormalizedUser((wsocket as WASocket).user.id).split("@")[0] : "-"});
 
               io.emit(`company-${whatsapp.companyId}-whatsappSession`, {
                 action: "update",
