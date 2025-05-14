@@ -1042,7 +1042,7 @@ const isValidMsg = (msg: proto.IWebMessageInfo): boolean => {
 
 		if (!ifType) {
 			logger.warn(`#### Nao achou o type em isValidMsg: ${msgType}
-${JSON.stringify(msg?.message)}`);
+			${JSON.stringify(msg?.message)}`);
 			Sentry.setExtra("Mensagem", { BodyMsg: msg.message, msg, msgType });
 			Sentry.captureException(new Error("Novo Tipo de Mensagem em isValidMsg"));
 		}
