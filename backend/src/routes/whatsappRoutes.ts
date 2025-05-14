@@ -13,8 +13,6 @@ whatsappRoutes.get("/whatsapp/:whatsappId", isAuth, WhatsAppController.show);
 
 whatsappRoutes.put("/whatsapp/:whatsappId", isAuth, WhatsAppController.update);
 
-whatsappRoutes.post("/whatsapp-restart/", isAuth, WhatsAppController.restart);
-
 whatsappRoutes.delete(
   "/whatsapp/:whatsappId",
   isAuth,

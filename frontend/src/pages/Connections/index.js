@@ -26,7 +26,7 @@ import {
 	CropFree,
 	DeleteOutline,
 } from "@material-ui/icons";
-import formatSerializedId from '../../utils/formatSerializedId';
+
 import MainContainer from "../../components/MainContainer";
 import MainHeader from "../../components/MainHeader";
 import MainHeaderButtonsWrapper from "../../components/MainHeaderButtonsWrapper";
@@ -114,16 +114,6 @@ const Connections = () => {
 	const [confirmModalInfo, setConfirmModalInfo] = useState(
 		confirmationModalInitialState
 	);
-
-  const restartWhatsapps = async () => {
-    // const companyId = localStorage.getItem("companyId");
-    try {
-      await api.post(`/whatsapp-restart/`);
-      toast.warn(i18n.t("Aguarde... reiniciando..."));
-    } catch (err) {
-      toastError(err);
-    }
-  }
 
 	const handleStartWhatsAppSession = async whatsAppId => {
 		try {
@@ -330,7 +320,6 @@ const Connections = () => {
 						role={user.profile}
 						perform="connections-page:addConnection"
 						yes={() => (
-						<>
 							<Button
 								variant="contained"
 								color="primary"
@@ -338,14 +327,6 @@ const Connections = () => {
 							>
 								{i18n.t("connections.buttons.add")}
 							</Button>
- 							<Button
-            					variant="contained"
-            					color="primary"
-            					onClick={restartWhatsapps}
-          					>
-            					{i18n.t("REINICIAR CONEXÕES")}
-          					</Button>
-							</>
 						)}
 					/>
 				</MainHeaderButtonsWrapper>
@@ -357,9 +338,6 @@ const Connections = () => {
 							<TableCell align="center">
 								{i18n.t("connections.table.name")}
 							</TableCell>
-							<TableCell align="center">
-                            	{i18n.t("connections.table.number")}
-                            </TableCell>							
 							<TableCell align="center">
 								{i18n.t("connections.table.status")}
 							</TableCell>
@@ -398,17 +376,6 @@ const Connections = () => {
 									whatsApps.map(whatsApp => (
 										<TableRow key={whatsApp.id}>
 											<TableCell align="center">{whatsApp.name}</TableCell>
-											<TableCell align="center">
-											  {whatsApp.number ? (
-												<>
-												  {console.log("Número do WhatsApp:", whatsApp.number)}
-												  {console.log("Número formatado:", formatSerializedId(whatsApp.number))}
-												  {formatSerializedId(whatsApp.number)}
-												</>
-											  ) : (
-												"-"
-											  )}
-											</TableCell>
 											<TableCell align="center">
 												{renderStatusToolTips(whatsApp)}
 											</TableCell>

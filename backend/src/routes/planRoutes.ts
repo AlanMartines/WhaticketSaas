@@ -12,8 +12,6 @@ planRoutes.get("/plans/list", PlanController.list);
 
 planRoutes.get("/plans/all", PlanController.list);
 
-planRoutes.get("/plans/register", PlanController.register);
-
 planRoutes.get("/plans/:id", isAuth, PlanController.show);
 
 planRoutes.post("/plans", isAuth, isSuper, PlanController.store);

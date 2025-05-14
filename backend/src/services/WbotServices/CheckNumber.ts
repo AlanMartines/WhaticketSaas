@@ -1,6 +1,5 @@
 import GetDefaultWhatsApp from "../../helpers/GetDefaultWhatsApp";
 import { getWbot } from "../../libs/wbot";
-import { logger } from "../../utils/logger";
 
 interface IOnWhatsapp {
   jid: string;
@@ -9,9 +8,6 @@ interface IOnWhatsapp {
 
 const checker = async (number: string, wbot: any) => {
   const [validNumber] = await wbot.onWhatsApp(`${number}@s.whatsapp.net`);
-
-  logger.info(validNumber);
-
   return validNumber;
 };
 

@@ -8,7 +8,6 @@ import ListPlansService from "../services/PlanService/ListPlansService";
 import CreatePlanService from "../services/PlanService/CreatePlanService";
 import UpdatePlanService from "../services/PlanService/UpdatePlanService";
 import ShowPlanService from "../services/PlanService/ShowPlanService";
-import FindAllPlanServiceRegister from "../services/PlanService/FindAllPlanServiceRegister";
 import FindAllPlanService from "../services/PlanService/FindAllPlanService";
 import DeletePlanService from "../services/PlanService/DeletePlanService";
 
@@ -31,7 +30,6 @@ type StorePlanData = {
   useKanban?: boolean;
   useOpenAi?: boolean;
   useIntegrations?: boolean;
-  useInternal?: boolean;
 };
 
 type UpdatePlanData = {
@@ -48,7 +46,6 @@ type UpdatePlanData = {
   useKanban?: boolean;
   useOpenAi?: boolean;
   useIntegrations?: boolean;
-  useInternal?: boolean;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -67,13 +64,6 @@ export const list = async (req: Request, res: Response): Promise<Response> => {
 
   return res.status(200).json(plans);
 };
-
-export const register = async (req: Request, res: Response): Promise<Response> => {
-    const plans: Plan[] = await FindAllPlanServiceRegister();
-  
-    return res.status(200).json(plans);
-  };
-  
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const newPlan: StorePlanData = req.body;

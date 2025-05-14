@@ -25,8 +25,11 @@ import toastError from '../../errors/toastError';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+//import logo from "../../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
 
-const logo = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/login.png`;
+const logo = process.env.REACT_APP_LOGO || logoDefault;
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100vw",

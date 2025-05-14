@@ -21,9 +21,6 @@ import { ContactForm } from "../ContactForm";
 import ContactModal from "../ContactModal";
 import { ContactNotes } from "../ContactNotes";
 
-import { generateColor } from "../../helpers/colorGenerator";
-import { getInitials } from "../../helpers/getInitials";
-
 const drawerWidth = 320;
 
 const useStyles = makeStyles(theme => ({
@@ -43,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 	header: {
 		display: "flex",
 		borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
-		backgroundColor: theme.palette.contactdrawer, //DARK MODE//
+		backgroundColor: theme.palette.contactdrawer, //DARK MODE PLW DESIGN//
 		alignItems: "center",
 		padding: theme.spacing(0, 1),
 		minHeight: "73px",
@@ -51,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 	},
 	content: {
 		display: "flex",
-		backgroundColor: theme.palette.contactdrawer, //DARK MODE//
+		backgroundColor: theme.palette.contactdrawer, //DARK MODE PLW DESIGN//
 		flexDirection: "column",
 		padding: "8px 0px 8px 8px",
 		height: "100%",
@@ -133,13 +130,7 @@ const ContactDrawer = ({ open, handleDrawerClose, contact, ticket, loading }) =>
 								style={{ cursor: "pointer", width: '100%' }}
 								titleTypographyProps={{ noWrap: true }}
 								subheaderTypographyProps={{ noWrap: true }}
-								avatar={<Avatar
-                      src={contact.profilePicUrl}
-                      alt="contact_image"
-                      style={{ width: 60, height: 60, backgroundColor: generateColor(contact?.number), color: "white", fontWeight: "bold" }}
-                    >
-                      {getInitials(contact?.name)}
-                    </Avatar>}
+								avatar={<Avatar src={contact.profilePicUrl} alt="contact_image" style={{ width: 60, height: 60 }} />}
 								title={
 									<>
 										<Typography onClick={() => setOpenForm(true)}>

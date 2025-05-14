@@ -24,14 +24,17 @@ app.set("queues", {
 });
 
 const bodyparser = require('body-parser');
-app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
+
+const allowedDomains = process.env.ALLOWED_DOMAINS?.split(',') || [];
 
 app.use(
-  cors({
-    credentials: true,
-    origin: process.env.FRONTEND_URL
-  })
+	cors({
+		credentials: true,
+		origin: allowedDomains
+	})
 );
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(Sentry.Handlers.requestHandler());

@@ -1,51 +1,42 @@
 import React, { useState, useEffect } from "react";
-import qs from 'query-string';
-
+import qs from "query-string";
 import * as Yup from "yup";
 import { useHistory } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Formik, Form, Field } from "formik";
-import usePlans from "../../hooks/usePlans";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import InputMask from 'react-input-mask';
-import api from "../../services/api";
 import {
-	FormControl,
-	InputLabel,
+	Avatar,
+	Button,
+	CssBaseline,
+	TextField,
+	Link,
+	Grid,
+	Box,
+	Container,
+	Typography,
 	MenuItem,
+	InputLabel,
 	Select,
+	makeStyles,
 } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
+import InputMask from "react-input-mask";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import { makeStyles, useTheme } from "@material-ui/core/styles";  // Added useTheme
-import Container from "@material-ui/core/Container";
-import { i18n } from "../../translate/i18n";
 
+import { i18n } from "../../translate/i18n";
 import { openApi } from "../../services/api";
 import toastError from "../../errors/toastError";
+import usePlans from "../../hooks/usePlans";
 import moment from "moment";
 
-const Copyright = () => {
-	return (
-		<Typography variant="body2" color="textSecondary" align="center">
-			{"Copyright © "}
-			<Link color="inherit" href="#">
-				Whaticket Saas
-			</Link>{" "}
-		   {new Date().getFullYear()}
-			{"."}
-		</Typography>
-	);
-};
+//import logo from "../../assets/logo.png";
+import logoDefault from "../../assets/logo.png";
+const logo = process.env.REACT_APP_LOGO || logoDefault;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
 	paper: {
 		marginTop: theme.spacing(8),
 		display: "flex",
@@ -63,208 +54,196 @@ const useStyles = makeStyles(theme => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
+	logo: {
+		margin: "0 auto",
+		height: "80px",
+		width: "100%",
+	},
 }));
 
+const Copyright = () => (
+	<Typography variant="body2" color="textSecondary" align="center">
+		{"Copyright © "}
+		<Link color="inherit" href="#">
+			Whaticket
+		</Link>{" "}
+		{new Date().getFullYear()}
+		{"."}
+	</Typography>
+);
+
 const UserSchema = Yup.object().shape({
-	name: Yup.string()
-		.min(2, "Too Short!")
-		.max(50, "Too Long!")
-		.required("Required"),
-	password: Yup.string().min(5, "Too Short!").max(50, "Too Long!"),
-	email: Yup.string().email("Invalid email").required("Required"),
+	name: Yup.string().min(2, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
+	email: Yup.string().email("E-mail inválido").required("Obrigatório"),
+	phone: Yup.string().required("Obrigatório"),
+	password: Yup.string().min(5, "Muito curto!").max(50, "Muito longo!").required("Obrigatório"),
 });
 
 const SignUp = () => {
 	const classes = useStyles();
 	const history = useHistory();
-	const theme = useTheme();  // Added to access theme
-	const [allowregister, setallowregister] = useState('enabled');
-    const [trial, settrial] = useState('3');
-	
-	const logoLight = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/interno.png`;
-	const logoDark = `${process.env.REACT_APP_BACKEND_URL}/public/logotipos/logo_w.png`;
-
-	// Use theme.palette.type to set the initial logo based on light or dark mode
-	const initialLogo = theme.palette.type === 'light' ? logoLight : logoDark;
-	const [logoImg, setLogoImg] = useState(initialLogo);
-	
-	let companyId = null;
+	const [plans, setPlans] = useState([]);
+	const { list: listPlans } = usePlans();
+	const dueDate = moment().add(3, "days").format();
 
 	useEffect(() => {
-        fetchallowregister();
-        fetchtrial();
-    }, []);
+		const fetchPlans = async () => {
+			try {
+				const plans = await listPlans();
+				setPlans(plans);
+			} catch (error) {
+				toastError(error);
+			}
+		};
+		fetchPlans();
+	}, [listPlans]);
 
-    const fetchtrial = async () => {
-        try {
-            const responsevvv = await api.get("/settings/trial");
-            const allowtrialX = responsevvv.data.value;
-            settrial(allowtrialX);
-        } catch (error) {
-            console.error('Error retrieving trial', error);
-        }
-    };
+	const handleSignUp = async (values) => {
+		const payload = {
+			...values,
+			recurrence: "MENSAL",
+			dueDate,
+			status: "t",
+			campaignsEnabled: true,
+		};
 
-    const fetchallowregister = async () => {
-        try {
-            const responsevv = await api.get("/settings/allowregister");
-            const allowregisterX = responsevv.data.value;
-            setallowregister(allowregisterX);
-        } catch (error) {
-            console.error('Error retrieving allowregister', error);
-        }
-    };
-
-    if(allowregister === "disabled"){
-    	history.push("/login");    
-    }
-
-	const params = qs.parse(window.location.search);
-	if (params.companyId !== undefined) {
-		companyId = params.companyId;
-	}
-
-	const initialState = { name: "", email: "", phone: "", password: "", planId: "disabled" };
-
-	const [user] = useState(initialState);
-	const dueDate = moment().add(trial, "day").format();
-
-	const handleSignUp = async values => {
-		Object.assign(values, { recurrence: "MENSAL" });
-		Object.assign(values, { dueDate: dueDate });
-		Object.assign(values, { status: "t" });
-		Object.assign(values, { campaignsEnabled: true });
 		try {
-			await openApi.post("/companies/cadastro", values);
+			await openApi.post("/companies/cadastro", payload);
 			toast.success(i18n.t("signup.toasts.success"));
 			history.push("/login");
-		} catch (err) {
-			console.log(err);
-			toastError(err);
+		} catch (error) {
+			toastError(error);
 		}
 	};
-
-	const [plans, setPlans] = useState([]);
-	const { register: listPlans } = usePlans();
-
-	useEffect(() => {
-		async function fetchData() {
-			const list = await listPlans();
-			setPlans(list);
-		}
-		fetchData();
-	}, []);
 
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
 			<div className={classes.paper}>
-				<div>
-				<img src={`${logoImg}?r=${Math.random()}`} style={{ margin: "0 auto" , width: "50%"}} alt={`${process.env.REACT_APP_NAME_SYSTEM}`} />
-				</div>
+				<img className={classes.logo} src={logo} alt="Logo" />
+				{/*<Typography component="h1" variant="h5">
+					{i18n.t("signup.title")}
+				</Typography>*/}
+				{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
 				<Formik
-					initialValues={user}
-					enableReinitialize={true}
+					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
 					validationSchema={UserSchema}
 					onSubmit={(values, actions) => {
-						setTimeout(() => {
-							handleSignUp(values);
-							actions.setSubmitting(false);
-						}, 400);
+						handleSignUp(values);
+						actions.setSubmitting(false);
 					}}
 				>
-					{({ touched, errors, isSubmitting }) => (
+					{({ touched, errors }) => (
 						<Form className={classes.form}>
 							<Grid container spacing={2}>
 								<Grid item xs={12}>
 									<Field
 										as={TextField}
-										autoComplete="name"
 										name="name"
-										error={touched.name && Boolean(errors.name)}
-										helperText={touched.name && errors.name}
 										variant="outlined"
 										fullWidth
 										id="name"
 										label="Nome da Empresa"
+										error={touched.name && Boolean(errors.name)}
+										helperText={touched.name && errors.name}
 									/>
 								</Grid>
-
 								<Grid item xs={12}>
 									<Field
 										as={TextField}
+										name="email"
 										variant="outlined"
 										fullWidth
 										id="email"
-										label={i18n.t("signup.form.email")}
-										name="email"
+										label="E-mail"
 										error={touched.email && Boolean(errors.email)}
 										helperText={touched.email && errors.email}
-										autoComplete="email"
-										required
 									/>
 								</Grid>
-								
 								<Grid item xs={12}>
-									<Field
-										as={InputMask}
-										mask="(99) 99999-9999"
-										variant="outlined"
-										fullWidth
-										id="phone"
-										name="phone"
-										error={touched.phone && Boolean(errors.phone)}
-										helperText={touched.phone && errors.phone}
-										autoComplete="phone"
-										required
-									>
-										{({ field }) => (
-											<TextField
-												{...field}
-												variant="outlined"
-												fullWidth
-												label="DDD988888888"
-												inputProps={{ maxLength: 11 }} // Definindo o limite de caracteres
-											/>
+									<Field name="phone">
+										{({ field, meta }) => (
+											<InputMask
+												mask="(99) 99999-9999"
+												value={field.value}
+												onChange={field.onChange}
+												onBlur={field.onBlur}
+											>
+												{() => (
+													<TextField
+														{...field}
+														variant="outlined"
+														fullWidth
+														id="phone"
+														label="Telefone"
+														error={meta.touched && Boolean(meta.error)}
+														helperText={meta.touched && meta.error}
+													/>
+												)}
+											</InputMask>
 										)}
 									</Field>
 								</Grid>
-								
 								<Grid item xs={12}>
 									<Field
 										as={TextField}
+										name="password"
 										variant="outlined"
 										fullWidth
-										name="password"
+										id="password"
+										label="Senha"
+										type="password"
 										error={touched.password && Boolean(errors.password)}
 										helperText={touched.password && errors.password}
-										label={i18n.t("signup.form.password")}
-										type="password"
-										id="password"
-										autoComplete="current-password"
-										required
 									/>
 								</Grid>
-
 								<Grid item xs={12}>
 									<InputLabel htmlFor="plan-selection">Plano</InputLabel>
 									<Field
 										as={Select}
+										name="planId"
 										variant="outlined"
 										fullWidth
 										id="plan-selection"
-										label="Plano"
-										name="planId"
-										required
 									>
-                                        <MenuItem value="disabled" disabled>
-                                        	<em>Selecione seu plano de assinatura</em>
-										</MenuItem>
-										{plans.map((plan, key) => (
-											<MenuItem key={key} value={plan.id}>
-										        {plan.name} - {plan.connections} WhatsApps - {plan.users} Usuários - R$ {plan.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-											</MenuItem>
-										))}
+										{plans
+											.sort((a, b) => {
+												const numA = parseInt(a.name.match(/^\d+/)?.[0] || "0", 10);
+												const numB = parseInt(b.name.match(/^\d+/)?.[0] || "0", 10);
+
+												if (numA !== numB) {
+													return numA - numB;
+												}
+
+												return a.name.localeCompare(b.name);
+											})
+											.map((plan) => (
+												<MenuItem key={plan.id} value={plan.id}>
+													<div style={{ display: "flex", flexDirection: "column" }}>
+														<Typography variant="body1" style={{ fontWeight: "bold" }}>
+															{`${plan.name} - Atendentes: ${plan.users} - WhatsApp: ${plan.connections} - Filas: ${plan.queues} - R$ ${plan.value}`}
+														</Typography>
+														<Tooltip
+															title={
+																<div>
+																	<Typography>{plan.useCampaigns ? "✔ Campanhas" : "✘ Campanhas"}</Typography>
+																	<Typography>{plan.useSchedules ? "✔ Agendamentos" : "✘ Agendamentos"}</Typography>
+																	<Typography>{plan.useInternalChat ? "✔ Chat Interno" : "✘ Chat Interno"}</Typography>
+																	<Typography>{plan.useExternalApi ? "✔ API Externa" : "✘ API Externa"}</Typography>
+																	<Typography>{plan.useKanban ? "✔ Kanban" : "✘ Kanban"}</Typography>
+																	<Typography>{plan.useOpenAi ? "✔ OpenAI" : "✘ OpenAI"}</Typography>
+																	<Typography>{plan.useIntegrations ? "✔ Integrações" : "✘ Integrações"}</Typography>
+																</div>
+															}
+															arrow
+														>
+															<Typography variant="body2" style={{ color: "gray", cursor: "pointer" }}>
+																Passe o mouse para ver os recursos
+															</Typography>
+														</Tooltip>
+													</div>
+												</MenuItem>
+											))}
 									</Field>
 								</Grid>
 							</Grid>
@@ -274,11 +253,10 @@ const SignUp = () => {
 								variant="contained"
 								color="primary"
 								className={classes.submit}
-								disabled={isSubmitting}
 							>
 								{i18n.t("signup.buttons.submit")}
 							</Button>
-							<Grid container justifyContent="flex-end">
+							<Grid container justify="flex-end">
 								<Grid item>
 									<Link component={RouterLink} to="/login" variant="body2">
 										{i18n.t("signup.buttons.login")}

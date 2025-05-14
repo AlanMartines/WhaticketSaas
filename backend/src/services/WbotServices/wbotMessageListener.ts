@@ -1690,7 +1690,7 @@ const handleChartbot = async (ticket: Ticket, msg: WAMessage, wbot: Session, don
         text: formatBody(`\u200e${queue.greetingMessage}\n\n${options}`, ticket.contact),
       };
 
-      console.log('textMessage5555555555555', textMessage)
+      console.log('Text Message', textMessage)
       const sendMsg = await wbot.sendMessage(
         `${ticket.contact.number}@${ticket.isGroup ? "g.us" : "s.whatsapp.net"}`,
         textMessage
@@ -2656,6 +2656,5 @@ const wbotMessageListener = async (wbot: Session, companyId: number): Promise<vo
     }, 5000);
   }
 };
-
 
 export { handleMessage, wbotMessageListener };

@@ -138,15 +138,6 @@ const reducer = (state, action) => {
     return [...state];
   }
 
-  if (action.type === "UPDATE_TICKET_PRESENCE") {
-    const data = action.payload;
-    const ticketIndex = state.findIndex((t) => t.id === data.ticketId);
-    if (ticketIndex !== -1) {
-      state[ticketIndex].presence = data.presence;
-    }
-    return [...state];
-  }
-
   if (action.type === "DELETE_TICKET") {
     const ticketId = action.payload;
     const ticketIndex = state.findIndex((t) => t.id === ticketId);
@@ -271,13 +262,6 @@ const TicketsListCustom = (props) => {
       }
     });
 
-    socket.on(`company-${companyId}-presence`, (data) => {
-      dispatch({
-        type: "UPDATE_TICKET_PRESENCE",
-        payload: data,
-      });
-    });
-
     socket.on(`company-${companyId}-contact`, (data) => {
       if (data.action === "update") {
         dispatch({
@@ -292,13 +276,12 @@ const TicketsListCustom = (props) => {
     };
   }, [status, showAll, user, selectedQueueIds, tags, users, profile, queues, socketManager]);
 
-  
   useEffect(() => {
-    const count = ticketsList.filter((ticket) => !ticket.isGroup).length;
-    if (typeof updateCount === 'function') {
-      updateCount(count);
+    if (typeof updateCount === "function") {
+      updateCount(ticketsList.length);
     }
-  }, [ticketsList, updateCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketsList]);
 
   const loadMore = () => {
     setPageNumber((prevState) => prevState + 1);
@@ -335,11 +318,9 @@ const TicketsListCustom = (props) => {
             </div>
           ) : (
             <>
-              {ticketsList
-                .filter((ticket) => ticket.isGroup.toString() === 'false')
-                .map((ticket) => (
-                  <TicketListItem ticket={ticket} key={ticket.id} />
-                ))}
+              {ticketsList.map((ticket) => (
+                <TicketListItem ticket={ticket} key={ticket.id} />
+              ))}
             </>
           )}
           {loading && <TicketsListSkeleton />}

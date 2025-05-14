@@ -120,7 +120,6 @@ const AnnouncementModal = ({ open, onClose, announcementId, reload }) => {
         await api.put(`/announcements/${announcementId}`, announcementData);
         if (attachment != null) {
           const formData = new FormData();
-		  formData.append("typeArch", "announcements");
           formData.append("file", attachment);
           await api.post(
             `/announcements/${announcementId}/media-upload`,
@@ -131,7 +130,6 @@ const AnnouncementModal = ({ open, onClose, announcementId, reload }) => {
         const { data } = await api.post("/announcements", announcementData);
         if (attachment != null) {
           const formData = new FormData();
-		  formData.append("typeArch", "announcements");
           formData.append("file", attachment);
           await api.post(`/announcements/${data.id}/media-upload`, formData);
         }

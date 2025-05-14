@@ -33,7 +33,7 @@ import {
 } from "@material-ui/core";
 import ConfirmationModal from "../ConfirmationModal";
 
-import path from "path-browserify";
+const path = require('path');
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -122,16 +122,9 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
         }
     };
 
-   const handleSaveQuickeMessage = async (values) => {
-        const quickemessageData = {
-            ...values,
-            isMedia: true,
-            mediaPath: attachment
-                ? String(attachment.name).replace(/ /g, "_")
-                : values.mediaPath
-                ? path.basename(values.mediaPath).replace(/ /g, "_")
-                : null,
-        };
+    const handleSaveQuickeMessage = async (values) => {
+
+        const quickemessageData = { ...values, isMedia: true, mediaPath: attachment ? String(attachment.name).replace(/ /g, "_") : values.mediaPath ? path.basename(values.mediaPath).replace(/ /g, "_") : null };
 
         try {
             if (quickemessageId) {
@@ -140,7 +133,10 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
                     const formData = new FormData();
                     formData.append("typeArch", "quickMessage");
                     formData.append("file", attachment);
-                    await api.post(`/quick-messages/${quickemessageId}/media-upload`, formData);
+                    await api.post(
+                        `/quick-messages/${quickemessageId}/media-upload`,
+                        formData
+                    );
                 }
             } else {
                 const { data } = await api.post("/quick-messages", quickemessageData);
@@ -153,6 +149,7 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
             }
             toast.success(i18n.t("quickMessages.toasts.success"));
             if (typeof reload == "function") {
+
                 reload();
             }
         } catch (err) {
@@ -189,7 +186,7 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
 
         setValueFunc("message", `${firstHalfText}${msgVar}${secondHalfText}`);
 
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 100));
         messageInputRef.current.setSelectionRange(newCursorPos, newCursorPos);
     };
 
@@ -203,14 +200,24 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
             >
                 {i18n.t("quickMessages.confirmationModal.deleteMessage")}
             </ConfirmationModal>
-            <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth scroll="paper">
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                maxWidth="xs"
+                fullWidth
+                scroll="paper"
+            >
                 <DialogTitle id="form-dialog-title">
                     {quickemessageId
                         ? `${i18n.t("quickMessages.dialog.edit")}`
                         : `${i18n.t("quickMessages.dialog.add")}`}
                 </DialogTitle>
                 <div style={{ display: "none" }}>
-                    <input type="file" ref={attachmentFile} onChange={(e) => handleAttachmentFile(e)} />
+                    <input
+                        type="file"
+                        ref={attachmentFile}
+                        onChange={(e) => handleAttachmentFile(e)}
+                    />
                 </div>
                 <Formik
                     initialValues={quickemessage}
@@ -240,27 +247,6 @@ const QuickMessageDialog = ({ open, onClose, quickemessageId, reload }) => {
                                             fullWidth
                                         />
                                     </Grid>
-									{(profile === "admin") && (
-									  <Grid xs={12} item>
-										<FormControl variant="outlined" margin="dense" fullWidth>
-										  <InputLabel id="geral-selection-label">
-											{i18n.t("quickMessages.dialog.geral")}
-										  </InputLabel>
-										  <Field
-											as={Select}
-											label={i18n.t("quickMessages.dialog.geral")}
-											placeholder={i18n.t("quickMessages.dialog.geral")}
-											labelId="geral-selection-label"
-											id="geral"
-											name="geral"
-											error={touched.geral && Boolean(errors.geral)}
-										  >
-											<MenuItem value={true}>Ativo</MenuItem>
-											<MenuItem value={false}>Inativo</MenuItem>
-										  </Field>
-										</FormControl>
-									  </Grid>
-									  )}
                                     <Grid xs={12} item>
                                         <Field
                                             as={TextField}

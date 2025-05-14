@@ -3,7 +3,7 @@ import isAuth from "../middleware/isAuth";
 
 import * as QuickMessageController from "../controllers/QuickMessageController";
 import multer from "multer";
-import uploadConfig from "../config/uploadquick";
+import uploadConfig from "../config/upload";
 
 const upload = multer(uploadConfig);
 

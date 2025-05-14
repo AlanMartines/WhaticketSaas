@@ -18,9 +18,11 @@ const update = async (req: Request, res: Response): Promise<Response> => {
   const { whatsappId } = req.params;
   const { companyId } = req.user;
 
-  const whatsapp = await ShowWhatsAppService(whatsappId, companyId);
-
-  await whatsapp.update({ session: "" });
+  const { whatsapp } = await UpdateWhatsAppService({
+    whatsappId,
+    companyId,
+    whatsappData: { session: "" }
+  });
 
   await StartWhatsAppSession(whatsapp, companyId);
 

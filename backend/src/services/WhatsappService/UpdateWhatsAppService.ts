@@ -60,7 +60,7 @@ const UpdateWhatsAppService = async ({
     complationMessage,
     outOfHoursMessage,
     ratingMessage,
-    queueIds,
+    queueIds = [],
     token,
     //timeSendQueue,
     //sendIdQueue = null,

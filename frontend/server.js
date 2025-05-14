@@ -11,3 +11,4 @@ app.get("/*", function (req, res) {
 app.listen(process.env.PORT, async () => {
   logger.info(`Server started on port: ${process.env.PORT}`);
 });
+

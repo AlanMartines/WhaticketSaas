@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     height: "100%",
     ...theme.scrollbarStyles,
-    backgroundColor: theme.palette.chatlist, //DARK MODE//
+    backgroundColor: theme.palette.chatlist, //DARK MODE PLW DESIGN//
   },
   inputArea: {
     position: "relative",
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 10px 5px",
     margin: "10px",
     position: "relative",
-    backgroundColor: "#87CEFA",
+    backgroundColor: "blue",
     maxWidth: 300,
     borderRadius: 10,
     borderBottomLeftRadius: 0,
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     padding: "10px 10px 5px",
     margin: "10px 10px 10px auto",
     position: "relative",
-    backgroundColor: "#4682B4", //DARK MODE//
+    backgroundColor: "green", //DARK MODE PLW DESIGN//
     textAlign: "right",
     maxWidth: 300,
     borderRadius: 10,

@@ -21,8 +21,7 @@ const ListCompaniesPlanService = async (): Promise<Company[]> => {
           "useExternalApi",
           "useKanban",
           "useOpenAi",
-          "useIntegrations",
-		  "useInternal"
+          "useIntegrations"
         ]
       },
     ]

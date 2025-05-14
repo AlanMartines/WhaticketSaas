@@ -103,15 +103,14 @@ const QueueModal = ({ open, onClose, queueId }) => {
   const [confirmationOpen, setConfirmationOpen] = useState(false);
 
   const [schedules, setSchedules] = useState([
-    { weekday: i18n.t("queueModal.serviceHours.monday"), weekdayEn: "monday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:30", endTimeB: "18:00", },
-    { weekday: i18n.t("queueModal.serviceHours.tuesday"), weekdayEn: "tuesday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:30", endTimeB: "18:00", },
-    { weekday: i18n.t("queueModal.serviceHours.wednesday"), weekdayEn: "wednesday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:30", endTimeB: "18:00", },
-    { weekday: i18n.t("queueModal.serviceHours.thursday"), weekdayEn: "thursday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:30", endTimeB: "18:00", },
-    { weekday: i18n.t("queueModal.serviceHours.friday"), weekdayEn: "friday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "13:30", endTimeB: "18:00", },
-    { weekday: i18n.t("queueModal.serviceHours.saturday"), weekdayEn: "saturday", startTimeA: "08:00", endTimeA: "12:00", startTimeB: "00:00", endTimeB: "00:00", },
-    { weekday: i18n.t("queueModal.serviceHours.sunday"), weekdayEn: "sunday", startTimeA: "00:00", endTimeA: "00:00", startTimeB: "00:00", endTimeB: "00:00", },
+    { weekday: "Segunda-feira", weekdayEn: "monday", startTime: "08:00", endTime: "18:00", },
+    { weekday: "Terça-feira", weekdayEn: "tuesday", startTime: "08:00", endTime: "18:00", },
+    { weekday: "Quarta-feira", weekdayEn: "wednesday", startTime: "08:00", endTime: "18:00", },
+    { weekday: "Quinta-feira", weekdayEn: "thursday", startTime: "08:00", endTime: "18:00", },
+    { weekday: "Sexta-feira", weekdayEn: "friday", startTime: "08:00", endTime: "18:00", },
+    { weekday: "Sábado", weekdayEn: "saturday", startTime: "08:00", endTime: "12:00", },
+    { weekday: "Domingo", weekdayEn: "sunday", startTime: "00:00", endTime: "00:00", },
   ]);
-
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [prompts, setPrompts] = useState([]);
 

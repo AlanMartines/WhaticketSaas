@@ -10,10 +10,8 @@ type Params = {
 const FindService = async ({ companyId, userId }: Params): Promise<QuickMessage[]> => {
   const notes: QuickMessage[] = await QuickMessage.findAll({
     where: {
-      [Op.or]: [
-        { companyId, userId },
-        { companyId, geral: true }
-      ]
+      companyId,
+      userId,
     },
     include: [{ model: Company, as: "company", attributes: ["id", "name"] }],
     order: [["shortcode", "ASC"]]

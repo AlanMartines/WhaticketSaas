@@ -80,7 +80,6 @@ export function PlanManagerForm(props) {
         useKanban: true,
         useOpenAi: true,
         useIntegrations: true,
-        useInternal: true
     });
 
     useEffect(() => {
@@ -295,24 +294,6 @@ export function PlanManagerForm(props) {
                                 </Field>
                             </FormControl>
                         </Grid>
-
-                        <Grid xs={12} sm={6} md={2} item>
-                            <FormControl margin="dense" variant="outlined" fullWidth>
-                                <InputLabel htmlFor="useInternal-selection">Uso Interno</InputLabel>
-                                <Field
-                                    as={Select}
-                                    id="useInternal-selection"
-                                    label="Uso Interno"
-                                    labelId="useInternal-selection-label"
-                                    name="useInternal"
-                                    margin="dense"
-                                >
-                                    <MenuItem value={false}>Sim</MenuItem>
-                                    <MenuItem value={true}>Não</MenuItem>
-                                </Field>
-                            </FormControl>
-                        </Grid>
-
                     </Grid>
                     <Grid spacing={2} justifyContent="flex-end" container>
 
@@ -372,10 +353,6 @@ export function PlansManagerGrid(props) {
         return row.useIntegrations === false ? `${i18n.t("plans.form.no")}` : `${i18n.t("plans.form.yes")}`;
     };
 
-    const renderInternal = (row) => {
-        return row.useInternal === false ? "Sim" : "Não";
-    };
-
     return (
         <Paper className={classes.tableContainer}>
             <Table
@@ -399,7 +376,6 @@ export function PlansManagerGrid(props) {
                         <TableCell align="center">Kanban</TableCell>
                         <TableCell align="center">Open.Ai</TableCell>
                         <TableCell align="center">Integrações</TableCell>
-						<TableCell align="center">Plano Interno</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -422,7 +398,6 @@ export function PlansManagerGrid(props) {
                             <TableCell align="center">{renderKanban(row)}</TableCell>
                             <TableCell align="center">{renderOpenAi(row)}</TableCell>
                             <TableCell align="center">{renderIntegrations(row)}</TableCell>
-							<TableCell align="center">{renderInternal(row)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -451,7 +426,6 @@ export default function PlansManager() {
         useKanban: true,
         useOpenAi: true,
         useIntegrations: true,
-        useInternal: true
     })
 
     useEffect(() => {
@@ -522,8 +496,7 @@ export default function PlansManager() {
             useExternalApi: true,
             useKanban: true,
             useOpenAi: true,
-            useIntegrations: true,
-            useInternal: true
+            useIntegrations: true
         })
     }
 
@@ -536,7 +509,6 @@ export default function PlansManager() {
         let useKanban = data.useKanban === false ? false : true
         let useOpenAi = data.useOpenAi === false ? false : true
         let useIntegrations = data.useIntegrations === false ? false : true
-        let useInternal= data.useInternal === true ? true : false
 
         setRecord({
             id: data.id,
@@ -551,8 +523,7 @@ export default function PlansManager() {
             useExternalApi,
             useKanban,
             useOpenAi,
-            useIntegrations,
-            useInternal
+            useIntegrations
         })
     }
 

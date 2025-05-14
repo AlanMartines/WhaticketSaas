@@ -18,8 +18,6 @@ import api from '../../services/api';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import './button.css';
-import { getRandomRGBA } from '../../utils/colors';
-import { getFirstDayOfMonth, getLastDayOfMonth } from '../../utils/dates';
 
 ChartJS.register(
     CategoryScale,
@@ -61,10 +59,8 @@ export const options = {
 
 export const ChartsDate = () => {
 
-    const [finalDate, setFinalDate] = useState(getLastDayOfMonth(new Date()));
-    const [initialDate, setInitialDate] = useState(
-        getFirstDayOfMonth(new Date())
-    );
+    const [initialDate, setInitialDate] = useState(new Date());
+    const [finalDate, setFinalDate] = useState(new Date());
     const [ticketsData, setTicketsData] = useState({ data: [], count: 0 });
 
     const companyId = localStorage.getItem("companyId");
@@ -74,31 +70,18 @@ export const ChartsDate = () => {
     }, []);
 
     const dataCharts = {
-      labels:
-        ticketsData &&
-        ticketsData?.data.length > 0 &&
-        ticketsData?.data.map((item) =>
-          item.hasOwnProperty("horario")
-            ? `Das ${item.horario}:00 as ${item.horario}:59`
-            : item.data
-        ),
-      datasets: [
-        {
-          // label: 'Dataset 1',
-          data:
-            ticketsData?.data.length > 0 &&
-            ticketsData?.data.map((item, index) => {
-              return item.total;
-            }),
-          backgroundColor:
-            ticketsData?.data.length > 0 &&
-            ticketsData?.data.map((item, index) => {
-              return getRandomRGBA();;
-            }),
-        },
-      ],
-    };
 
+        labels: ticketsData && ticketsData?.data.length > 0 && ticketsData?.data.map((item) => (item.hasOwnProperty('horario') ? `Das ${item.horario}:00 as ${item.horario}:59` : item.data)),
+        datasets: [
+            {
+                // label: 'Dataset 1',
+                data: ticketsData?.data.length > 0 && ticketsData?.data.map((item, index) => {
+                    return item.total
+                }),
+                backgroundColor: '#2DDD7F',
+            },
+        ],
+    };
 
     const handleGetTicketsInformation = async () => {
         try {

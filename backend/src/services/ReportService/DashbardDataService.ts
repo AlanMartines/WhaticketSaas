@@ -4,6 +4,7 @@ import { QueryTypes } from "sequelize";
 import * as _ from "lodash";
 import sequelize from "../../database";
 
+
 export interface DashboardData {
   counters: any;
   attendants: [];
@@ -55,17 +56,17 @@ export default async function DashboardDataService(
     counters as (
       select
         (select avg("supportTime") from traking where "supportTime" > 0) "avgSupportTime",
-        (select avg("waitTime") from traking where "waitTime" > 0) "avgWaitTime",
         (
-          select count(distinct "id")
-          from "Tickets"
-          where status like 'open' and "companyId" = ?
-        ) "supportHappening",
-        (
-          select count(distinct "id")
-          from "Tickets"
-          where status like 'pending' and "companyId" = ?
-        ) "supportPending",
+          select
+            coalesce(avg(
+              (date_part('day', age(t."startedAt", t."queuedAt")) * 24 * 60) +
+              (date_part('hour', age(t."startedAt", t."queuedAt")) * 60) +
+              (date_part('minutes', age(t."startedAt", t."queuedAt")))
+            ), 0)
+          from traking t
+        ) "avgWaitTime",
+        (select count(distinct "id") from "Tickets" where status like 'open' and "companyId" = ?) "supportHappening",
+        (select count(distinct "id") from "Tickets" where status like 'pending' and "companyId" = ?) "supportPending",
         (select count(id) from traking where finished) "supportFinished",
         (
           select count(leads.id) from (

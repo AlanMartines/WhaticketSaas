@@ -13,17 +13,15 @@ export const StartWhatsAppSession = async (
   await whatsapp.update({ status: "OPENING" });
 
   const io = getIO();
-  io.emit(`company-${companyId}-whatsappSession`, {
+  io.to(`company-${whatsapp.companyId}-mainchannel`).emit("whatsappSession", {
     action: "update",
     session: whatsapp
   });
 
-
   try {
     const wbot = await initWASocket(whatsapp);
-
     wbotMessageListener(wbot, companyId);
-    await wbotMonitor(wbot, whatsapp, companyId);
+    wbotMonitor(wbot, whatsapp, companyId);
   } catch (err) {
     Sentry.captureException(err);
     logger.error(err);

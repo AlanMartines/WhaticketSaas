@@ -8,7 +8,7 @@ const TicketsContextProvider = ({ children }) => {
     const history = useHistory();
 
     useEffect(() => {
-        if (currentTicket.id !== null && currentTicket.uuid !== undefined) {
+        if (currentTicket.id !== null) {
             history.push(`/tickets/${currentTicket.uuid}`);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
