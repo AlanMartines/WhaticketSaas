@@ -263,7 +263,7 @@ const SignUp = () => {
 											))}
 									</Field>
 								</Grid>
-								<Grid xs={12} sm={6} md={2} item>
+								<Grid item xs={12}>
 										<InputLabel htmlFor="recorrencia-selection">Recorrência</InputLabel>
 										<Field
 											as={Select}
