@@ -264,23 +264,23 @@ const SignUp = () => {
 									</Field>
 								</Grid>
 								<Grid item xs={12}>
-										<InputLabel htmlFor="recorrencia-selection">Recorrência</InputLabel>
-										<Field
-											as={Select}
-											label="Recorrência"
-											labelId="recorrencia-selection-label"
-											id="recurrence"
-											name="recurrence"
-											margin="dense"
-											variant="outlined"
-											fullWidth
-										>
-											<MenuItem value="MENSAL">Mensal</MenuItem>
-											<MenuItem value="BIMESTRAL">Bimestral</MenuItem>
-											<MenuItem value="TRIMESTRAL">Trimestral</MenuItem>
-											<MenuItem value="SEMESTRAL">Semestral</MenuItem>
-											<MenuItem value="ANUAL">Anual</MenuItem>
-										</Field>
+									<InputLabel htmlFor="recorrencia-selection">Recorrência</InputLabel>
+									<Field
+										as={Select}
+										label="Recorrência"
+										labelId="recorrencia-selection-label"
+										id="recurrence"
+										name="recurrence"
+										margin="dense"
+										variant="outlined"
+										fullWidth
+									>
+										<MenuItem value="MENSAL">Mensal</MenuItem>
+										<MenuItem value="BIMESTRAL">Bimestral</MenuItem>
+										<MenuItem value="TRIMESTRAL">Trimestral</MenuItem>
+										<MenuItem value="SEMESTRAL">Semestral</MenuItem>
+										<MenuItem value="ANUAL">Anual</MenuItem>
+									</Field>
 								</Grid>
 							</Grid>
 							<Button
