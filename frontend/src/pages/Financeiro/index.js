@@ -36,8 +36,8 @@ const reducer = (state, action) => {
     const invoices = action.payload;
     const newUsers = [];
 
-    invoices.forEach((user) => {
-      const userIndex = state.findIndex((u) => u.id === user.id);
+    invoices.forEach(user => {
+      const userIndex = state.findIndex(u => u.id === user.id);
       if (userIndex !== -1) {
         state[userIndex] = user;
       } else {
@@ -50,7 +50,7 @@ const reducer = (state, action) => {
 
   if (action.type === "UPDATE_USERS") {
     const user = action.payload;
-    const userIndex = state.findIndex((u) => u.id === user.id);
+    const userIndex = state.findIndex(u => u.id === user.id);
 
     if (userIndex !== -1) {
       state[userIndex] = user;
@@ -63,7 +63,7 @@ const reducer = (state, action) => {
   if (action.type === "DELETE_USER") {
     const userId = action.payload;
 
-    const userIndex = state.findIndex((u) => u.id === userId);
+    const userIndex = state.findIndex(u => u.id === userId);
     if (userIndex !== -1) {
       state.splice(userIndex, 1);
     }
@@ -75,13 +75,13 @@ const reducer = (state, action) => {
   }
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   mainPaper: {
     flex: 1,
     padding: theme.spacing(1),
     overflowY: "scroll",
-    ...theme.scrollbarStyles,
-  },
+    ...theme.scrollbarStyles
+  }
 }));
 
 const Invoices = () => {
@@ -96,13 +96,11 @@ const Invoices = () => {
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [contactModalOpen, setContactModalOpen] = useState(false);
 
-
-  const handleOpenContactModal = (invoices) => {
+  const handleOpenContactModal = invoices => {
     setStoragePlans(invoices);
     setSelectedContactId(null);
     setContactModalOpen(true);
   };
-
 
   const handleCloseContactModal = () => {
     setSelectedContactId(null);
@@ -119,7 +117,7 @@ const Invoices = () => {
       const fetchInvoices = async () => {
         try {
           const { data } = await api.get("/invoices/all", {
-            params: { searchParam, pageNumber },
+            params: { searchParam, pageNumber }
           });
           dispatch({ type: "LOAD_INVOICES", payload: data });
           setHasMore(data.hasMore);
@@ -133,33 +131,36 @@ const Invoices = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchParam, pageNumber]);
 
-
   const loadMore = () => {
-    setPageNumber((prevState) => prevState + 1);
+    setPageNumber(prevState => prevState + 1);
   };
 
-  const handleScroll = (e) => {
+  const handleScroll = e => {
     if (!hasMore || loading) return;
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     if (scrollHeight - (scrollTop + 100) < clientHeight) {
       loadMore();
     }
   };
-  const rowStyle = (record) => {
+  const rowStyle = record => {
     const hoje = moment(moment()).format("DD/MM/yyyy");
     const vencimento = moment(record.dueDate).format("DD/MM/yyyy");
-    var diff = moment(vencimento, "DD/MM/yyyy").diff(moment(hoje, "DD/MM/yyyy"));
-    var dias = moment.duration(diff).asDays();    
+    var diff = moment(vencimento, "DD/MM/yyyy").diff(
+      moment(hoje, "DD/MM/yyyy")
+    );
+    var dias = moment.duration(diff).asDays();
     if (dias < 0 && record.status !== "paid") {
       return { backgroundColor: "#ffbcbc9c" };
     }
   };
 
-  const rowStatus = (record) => {
+  const rowStatus = record => {
     const hoje = moment(moment()).format("DD/MM/yyyy");
     const vencimento = moment(record.dueDate).format("DD/MM/yyyy");
-    var diff = moment(vencimento, "DD/MM/yyyy").diff(moment(hoje, "DD/MM/yyyy"));
-    var dias = moment.duration(diff).asDays();    
+    var diff = moment(vencimento, "DD/MM/yyyy").diff(
+      moment(hoje, "DD/MM/yyyy")
+    );
+    var dias = moment.duration(diff).asDays();
     const status = record.status;
     if (status === "paid") {
       return "Pago";
@@ -167,10 +168,23 @@ const Invoices = () => {
     if (dias < 0) {
       return "Vencido";
     } else {
-      return "Em Aberto"
+      return "Em Aberto";
     }
+  };
 
-  }
+  const rowValue = (invoices) => {
+    const recurrenceMultiplier = {
+      "MENSAL": 1,
+      "BIMESTRAL": 2,
+      "TRIMESTRAL": 3,
+      "SEMESTRAL": 6,
+      "ANUAL": 12,
+    };
+  
+    const multiplier = recurrenceMultiplier[invoices.recurrence] || 1;
+    
+    return invoices.value * multiplier;
+  };
 
   return (
     <MainContainer>
@@ -180,7 +194,6 @@ const Invoices = () => {
         aria-labelledby="form-dialog-title"
         Invoice={storagePlans}
         contactId={selectedContactId}
-
       ></SubscriptionModal>
       <MainHeader>
         <Title>Faturas</Title>
@@ -203,15 +216,25 @@ const Invoices = () => {
           </TableHead>
           <TableBody>
             <>
-              {invoices.map((invoices) => (
+              {invoices.map(invoices => (
                 <TableRow style={rowStyle(invoices)} key={invoices.id}>
                   <TableCell align="center">{invoices.id}</TableCell>
                   <TableCell align="center">{invoices.detail}</TableCell>
-                  <TableCell style={{ fontWeight: 'bold' }} align="center">{invoices.value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}</TableCell>
-                  <TableCell align="center">{moment(invoices.dueDate).format("DD/MM/YYYY")}</TableCell>
-                  <TableCell style={{ fontWeight: 'bold' }} align="center">{rowStatus(invoices)}</TableCell>
+                  {/*<TableCell style={{ fontWeight: 'bold' }} align="center">{invoices.value.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}</TableCell>*/}
+                  <TableCell style={{ fontWeight: "bold" }} align="center">
+                    {rowValue(invoices).toLocaleString("pt-br", {
+                      style: "currency",
+                      currency: "BRL"
+                    })}
+                  </TableCell>
                   <TableCell align="center">
-                    {rowStatus(invoices) !== "Pago" ?
+                    {moment(invoices.dueDate).format("DD/MM/YYYY")}
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "bold" }} align="center">
+                    {rowStatus(invoices)}
+                  </TableCell>
+                  <TableCell align="center">
+                    {rowStatus(invoices) !== "Pago" ? (
                       <Button
                         size="small"
                         variant="outlined"
@@ -219,16 +242,17 @@ const Invoices = () => {
                         onClick={() => handleOpenContactModal(invoices)}
                       >
                         PAGAR
-                      </Button> :
+                      </Button>
+                    ) : (
                       <Button
                         size="small"
-                        variant="outlined" 
+                        variant="outlined"
                         /* color="secondary"
                         disabled */
                       >
-                        PAGO 
-                      </Button>}
-
+                        PAGO
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
