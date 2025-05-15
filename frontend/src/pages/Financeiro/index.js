@@ -172,7 +172,7 @@ const Invoices = () => {
     }
   };
 
-  const rowValue = (invoices) => {
+  const rowValue = (invoice) => {
     const recurrenceMultiplier = {
       "MENSAL": 1,
       "BIMESTRAL": 2,
@@ -180,11 +180,13 @@ const Invoices = () => {
       "SEMESTRAL": 6,
       "ANUAL": 12,
     };
-  
-    const multiplier = recurrenceMultiplier[invoices.recurrence] || 1;
-    
-    return invoices.value * multiplier;
+
+    const multiplier = recurrenceMultiplier[invoice.recurrence] || 1;
+
+    return invoice.value * multiplier;
   };
+
+  console.log(JSON.stringify(invoices), null, 2);
 
   return (
     <MainContainer>
@@ -247,8 +249,8 @@ const Invoices = () => {
                       <Button
                         size="small"
                         variant="outlined"
-                        /* color="secondary"
-                        disabled */
+                      /* color="secondary"
+                      disabled */
                       >
                         PAGO
                       </Button>

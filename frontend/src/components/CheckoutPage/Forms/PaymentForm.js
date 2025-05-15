@@ -177,13 +177,13 @@ export default function Pricing(props) {
   //     "SEMESTRAL": 6,
   //     "ANUAL": 12,
   //   };
-  
+
   //   const multiplier = recurrenceMultiplier[invoices.recurrence] || 1;
-    
+
   //   return invoices.value * multiplier;
   // };
 
-console.log(JSON.stringify(tiers), null, 2);
+  console.log(JSON.stringify(tiers), null, 2);
 
   return (
     <React.Fragment>
