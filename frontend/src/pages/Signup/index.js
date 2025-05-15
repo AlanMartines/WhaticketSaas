@@ -264,10 +264,7 @@ const SignUp = () => {
 									</Field>
 								</Grid>
 								<Grid xs={12} sm={6} md={2} item>
-									<FormControl margin="dense" variant="outlined" fullWidth>
-										<InputLabel htmlFor="recorrencia-selection">
-											Recorrência
-										</InputLabel>
+										<InputLabel htmlFor="recorrencia-selection">Recorrência</InputLabel>
 										<Field
 											as={Select}
 											label="Recorrência"
@@ -275,6 +272,8 @@ const SignUp = () => {
 											id="recurrence"
 											name="recurrence"
 											margin="dense"
+											variant="outlined"
+											fullWidth
 										>
 											<MenuItem value="MENSAL">Mensal</MenuItem>
 											<MenuItem value="BIMESTRAL">Bimestral</MenuItem>
@@ -282,7 +281,6 @@ const SignUp = () => {
 											<MenuItem value="SEMESTRAL">Semestral</MenuItem>
 											<MenuItem value="ANUAL">Anual</MenuItem>
 										</Field>
-									</FormControl>
 								</Grid>
 							</Grid>
 							<Button
