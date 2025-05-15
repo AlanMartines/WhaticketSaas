@@ -84,7 +84,9 @@ const SignUp = () => {
 	const history = useHistory();
 	const [plans, setPlans] = useState([]);
 	const { list: listPlans } = usePlans();
-	const dueDate = moment().add(3, "days").format();
+
+	const daysExpire = parseInt(process.env.REACT_APP_TRIALEXPIRATION, 10) || 3;
+	const dueDate = moment().add(daysExpire, "days").format();
 
 	useEffect(() => {
 		const fetchPlans = async () => {
