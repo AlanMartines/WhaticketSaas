@@ -84,9 +84,7 @@ const SignUp = () => {
 	const history = useHistory();
 	const [plans, setPlans] = useState([]);
 	const { list: listPlans } = usePlans();
-
-	const daysExpire = parseInt(process.env.REACT_APP_TRIALEXPIRATION, 10) || 3;
-	const dueDate = moment().add(daysExpire, "days").format();
+	const dueDate = moment().add(3, "days").format();
 
 	useEffect(() => {
 		const fetchPlans = async () => {
@@ -100,27 +98,10 @@ const SignUp = () => {
 		fetchPlans();
 	}, [listPlans]);
 
-	// const handleSignUp = async (values) => {
-	// 	const payload = {
-	// 		...values,
-	// 		recurrence: "MENSAL",
-	// 		dueDate,
-	// 		status: "t",
-	// 		campaignsEnabled: true,
-	// 	};
-
-	// 	try {
-	// 		await openApi.post("/companies/cadastro", payload);
-	// 		toast.success(i18n.t("signup.toasts.success"));
-	// 		history.push("/login");
-	// 	} catch (error) {
-	// 		toastError(error);
-	// 	}
-	// };
-
 	const handleSignUp = async (values) => {
 		const payload = {
 			...values,
+			recurrence: "MENSAL",
 			dueDate,
 			status: "t",
 			campaignsEnabled: true,
@@ -145,7 +126,7 @@ const SignUp = () => {
 				</Typography>*/}
 				{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
 				<Formik
-					initialValues={{ name: "", email: "", phone: "", password: "", planId: "", recurrence: "" }}
+					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
 					validationSchema={UserSchema}
 					onSubmit={(values, actions) => {
 						handleSignUp(values);
@@ -263,25 +244,6 @@ const SignUp = () => {
 													</div>
 												</MenuItem>
 											))}
-									</Field>
-								</Grid>
-								<Grid item xs={12}>
-									<InputLabel htmlFor="recorrencia-selection">Recorrência</InputLabel>
-									<Field
-										as={Select}
-										label="Recorrência"
-										labelId="recorrencia-selection-label"
-										id="recurrence"
-										name="recurrence"
-										margin="dense"
-										variant="outlined"
-										fullWidth
-									>
-										<MenuItem value="MENSAL">Mensal</MenuItem>
-										<MenuItem value="BIMESTRAL">Bimestral</MenuItem>
-										<MenuItem value="TRIMESTRAL">Trimestral</MenuItem>
-										<MenuItem value="SEMESTRAL">Semestral</MenuItem>
-										<MenuItem value="ANUAL">Anual</MenuItem>
 									</Field>
 								</Grid>
 							</Grid>

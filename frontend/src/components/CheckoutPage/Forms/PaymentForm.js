@@ -167,24 +167,8 @@ export default function Pricing(props) {
     setLoading(false);
   };
 
+
   const tiers = storagePlans
-
-  // const rowValue = (invoices) => {
-  //   const recurrenceMultiplier = {
-  //     "MENSAL": 1,
-  //     "BIMESTRAL": 2,
-  //     "TRIMESTRAL": 3,
-  //     "SEMESTRAL": 6,
-  //     "ANUAL": 12,
-  //   };
-
-  //   const multiplier = recurrenceMultiplier[invoices.recurrence] || 1;
-
-  //   return invoices.value * multiplier;
-  // };
-
-  console.log(JSON.stringify(tiers), null, 2);
-
   return (
     <React.Fragment>
       <Grid container spacing={3}>
