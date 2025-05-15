@@ -98,10 +98,27 @@ const SignUp = () => {
 		fetchPlans();
 	}, [listPlans]);
 
+	// const handleSignUp = async (values) => {
+	// 	const payload = {
+	// 		...values,
+	// 		recurrence: "MENSAL",
+	// 		dueDate,
+	// 		status: "t",
+	// 		campaignsEnabled: true,
+	// 	};
+
+	// 	try {
+	// 		await openApi.post("/companies/cadastro", payload);
+	// 		toast.success(i18n.t("signup.toasts.success"));
+	// 		history.push("/login");
+	// 	} catch (error) {
+	// 		toastError(error);
+	// 	}
+	// };
+
 	const handleSignUp = async (values) => {
 		const payload = {
 			...values,
-			recurrence: "MENSAL",
 			dueDate,
 			status: "t",
 			campaignsEnabled: true,
@@ -126,7 +143,7 @@ const SignUp = () => {
 				</Typography>*/}
 				{/* <form className={classes.form} noValidate onSubmit={handleSignUp}> */}
 				<Formik
-					initialValues={{ name: "", email: "", phone: "", password: "", planId: "" }}
+					initialValues={{ name: "", email: "", phone: "", password: "", planId: "", recurrence: "" }}
 					validationSchema={UserSchema}
 					onSubmit={(values, actions) => {
 						handleSignUp(values);
@@ -245,6 +262,27 @@ const SignUp = () => {
 												</MenuItem>
 											))}
 									</Field>
+								</Grid>
+								<Grid xs={12} sm={6} md={2} item>
+									<FormControl margin="dense" variant="outlined" fullWidth>
+										<InputLabel htmlFor="recorrencia-selection">
+											Recorrência
+										</InputLabel>
+										<Field
+											as={Select}
+											label="Recorrência"
+											labelId="recorrencia-selection-label"
+											id="recurrence"
+											name="recurrence"
+											margin="dense"
+										>
+											<MenuItem value="MENSAL">Mensal</MenuItem>
+											<MenuItem value="BIMESTRAL">Bimestral</MenuItem>
+											<MenuItem value="TRIMESTRAL">Trimestral</MenuItem>
+											<MenuItem value="SEMESTRAL">Semestral</MenuItem>
+											<MenuItem value="ANUAL">Anual</MenuItem>
+										</Field>
+									</FormControl>
 								</Grid>
 							</Grid>
 							<Button

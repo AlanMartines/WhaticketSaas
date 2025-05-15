@@ -153,10 +153,10 @@ const MainListItems = (props) => {
   const [searchParam] = useState("");
   const [chats, dispatch] = useReducer(reducer, []);
   const { getPlanCompany } = usePlans();
-  
+
   const [version, setVersion] = useState(false);
-  
-  
+
+
   const { getVersion } = useVersion();
 
   const socketManager = useContext(SocketContext);
@@ -169,7 +169,7 @@ const MainListItems = (props) => {
     fetchVersion();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -301,14 +301,14 @@ const MainListItems = (props) => {
         primary={i18n.t("mainDrawer.listItems.tickets")}
         icon={<WhatsAppIcon />}
       />
-	  
-	{showKanban && (  
-	  <ListItemLink
-        to="/kanban"
-        primary={i18n.t("Kanban")}
-        icon={<TableChartIcon />}
-      />
-	  )}
+
+      {showKanban && (
+        <ListItemLink
+          to="/kanban"
+          primary={i18n.t("Kanban")}
+          icon={<TableChartIcon />}
+        />
+      )}
 
 
       <ListItemLink
@@ -316,8 +316,8 @@ const MainListItems = (props) => {
         primary={i18n.t("mainDrawer.listItems.quickMessages")}
         icon={<FlashOnIcon />}
       />
-	  
-	  <ListItemLink
+
+      <ListItemLink
         to="/todolist"
         primary={i18n.t("Tarefas")}
         icon={<BorderColorIcon />}
@@ -375,7 +375,7 @@ const MainListItems = (props) => {
               color="inherit">
               {i18n.t("mainDrawer.listItems.administration")}
             </ListSubheader>
-			
+
             {showCampaigns && (
               <>
                 <ListItem
@@ -495,8 +495,8 @@ const MainListItems = (props) => {
               primary={i18n.t("mainDrawer.listItems.settings")}
               icon={<SettingsOutlinedIcon />}
             />
-			
-			
+
+
             {!collapsed && <React.Fragment>
               <Divider />
               {/* 
@@ -511,7 +511,7 @@ const MainListItems = (props) => {
               </Typography>
             </React.Fragment>
             }
-			
+
           </>
         )}
       />
